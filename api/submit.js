@@ -17,9 +17,8 @@ export default async function handler(req, res) {
     let verified = null;
     try {
       const classes = await year2Classes();
-      // The roster search only matches the start of one word (as pupils type it), so search with the
-      // first word that has at least 3 letters, then look for the exact full name in the answer.
-      const word = name.split(/\s+/).find(w => w.length >= 3) || name;
+      // The roster search matches the start of the pupil's FIRST word only, so search with that word.
+      const word = name.split(/\s+/)[0];
       const names = classes.includes(klass) ? await rosterSearch(klass, word) : [];
       const want = name.replace(/\s+/g, ' ').toLowerCase();
       verified = names.some(n => n.replace(/\s+/g, ' ').trim().toLowerCase() === want);

@@ -57,14 +57,14 @@ function nameScreen(klass) {
   app.innerHTML = '<div class="top"><button class="btn ghost" id="back">Back</button><span class="who">Class ' + esc(klass) + '</span></div>' +
     '<section class="panel" style="margin-top:16px"><label for="nm" class="head" style="font-size:26px;display:block;margin-bottom:10px">Type your name</label>' +
     '<input id="nm" class="name-in" autocomplete="off" autocapitalize="words" spellcheck="false">' +
-    '<p class="muted" id="hint" style="font-size:17px;margin:8px 0 0">Type 3 letters, then tap your name.</p><div class="names" id="names"></div></section>';
+    '<p class="muted" id="hint" style="font-size:17px;margin:8px 0 0">Type the first 2 or 3 letters, then tap your name.</p><div class="names" id="names"></div></section>';
   document.getElementById('back').onclick = homeScreen;
   const inp = document.getElementById('nm'), box = document.getElementById('names'), hint = document.getElementById('hint');
   let t = null, seq = 0;
   inp.focus();
   inp.oninput = () => {
     clearTimeout(t); const q = inp.value.trim();
-    if (q.length < 3) { box.innerHTML = ''; hint.textContent = 'Type 3 letters, then tap your name.'; return; }
+    if (q.length < 2) { box.innerHTML = ''; hint.textContent = 'Type the first 2 or 3 letters, then tap your name.'; return; }
     t = setTimeout(async () => {
       const my = ++seq;
       try {
