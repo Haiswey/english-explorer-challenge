@@ -31,6 +31,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - B Spelling: picture, TYPE the 2 missing letters (no letter choices shown), 6 x 2 marks (1 per letter)
 - D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place). Tiles are lower case; the page capitalises the first word, "I" and days when placed, so a capital never shows the first word
 - No listening items (audio may not work on some school devices).
+- Sentence-building rule: every sentence must have ONE natural word order (no movable time or place phrases like "on Saturdays" or "in the park", no "walk and talk" pairs), because marking compares tiles in a fixed order.
 
 ## Rules from Miss Irene
 - Images for teaching tools must be EMBEDDED in the files (inline SVG or base64 data URIs), never linked from
@@ -44,10 +45,10 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
 
 ## Challenge level: challenge-1 (39 marks, unlocked by full marks in the practice test)
-- Pupils who score 35/35 in the practice test see "You unlocked the Challenge level!" on the result screen.
-  The server enforces this: `/api/quiz?level=challenge` and `/api/submit` (level "challenge") check the pupil's
-  practice result in Blob (`hasFullMarks` in `api/_lib.js`). A pupil who got full marks on another device must
-  retake the practice test on this device to see the button.
+- A pupil who has EVER scored 35/35 in the practice test is offered the Challenge level: on the result screen and on the
+  "Hello, <name>" screen, on any device and after a retake. The page asks the server (`/api/quiz?level=challenge`, which
+  checks the pupil's practice results in Blob with `hasFullMarks` in `api/_lib.js`); `/api/submit` (level "challenge")
+  checks the same, so typing the address does not skip the practice test.
 - A Vocabulary 6 x 1; B Spelling: type the WHOLE word, 6 x 2 (1 mark if exactly one letter is wrong);
   C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 words, 5 x 3.
 - Both quizzes live in `api/_quiz.js` (PRACTICE, CHALLENGE). Every new picture code must be added to `PICS`
