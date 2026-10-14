@@ -1,0 +1,14 @@
+import { getQuiz } from './_quiz.js';
+import { getAttempt } from './_lib.js';
+
+// Has this pupil already done the test? (one attempt each) Returns their first result if so.
+export default async function handler(req, res) {
+  const q = req.query || {};
+  const klass = String(q.klass || '').trim().toUpperCase().slice(0, 4);
+  const name = String(q.name || '').trim().slice(0, 80);
+  if (!klass || !name) return res.status(200).json({ done: false });
+  try {
+    const result = await getAttempt(getQuiz(q.level), klass, name);
+    res.status(200).json(result ? { done: true, result } : { done: false });
+  } catch { res.status(200).json({ done: false }); }
+}
