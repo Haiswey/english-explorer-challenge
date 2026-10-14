@@ -34,8 +34,9 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Rules from Miss Irene
 - Images for teaching tools must be EMBEDDED in the files (inline SVG or base64 data URIs), never linked from
-  external URLs. TODO: the quiz still loads OpenMoji pictures from cdn.jsdelivr.net (with an emoji fallback);
-  replace these with embedded images.
+  external URLs. Done: the 19 OpenMoji pictures (v15.1.0, CC BY-SA 4.0, credited on the home screen) are embedded
+  as base64 SVG in the `PICS` map in `public/index.html`. A new picture code in `api/_quiz.js` must be added to `PICS`
+  (otherwise the plain emoji shows instead). Only the Google Fonts stylesheet is still external.
 - If any sound is ever added: edge-tts MP3s embedded as base64 (voices en-SG-LunaNeural, en-GB-SoniaNeural or
   en-US-AnaNeural, rate -10%). Never use speechSynthesis.
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
