@@ -26,11 +26,12 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 
-## Practice test: mock-easy-3 (easy level, 19 questions, 35 marks)
+## Practice test: mock-easy-4 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
 - B Spelling: picture, TYPE the 2 missing letters (no letter choices shown), 6 x 2 marks (1 per letter)
 - D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place). Tiles are lower case; the page capitalises the first word, "I" and days when placed, so a capital never shows the first word
 - No listening items (audio may not work on some school devices).
+- Sentence-building rule: every sentence must have ONE natural word order (no movable time or place phrases like "on Saturdays" or "in the park", no "walk and talk" pairs), because marking compares tiles in a fixed order.
 
 ## Rules from Miss Irene
 - Images for teaching tools must be EMBEDDED in the files (inline SVG or base64 data URIs), never linked from
@@ -43,7 +44,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   en-US-AnaNeural, rate -10%). Never use speechSynthesis.
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
 
-## Challenge level: challenge-1 (39 marks, unlocked by full marks in the practice test)
+## Challenge level: challenge-2 (39 marks, unlocked by full marks in the practice test)
 - Pupils who score 35/35 in the practice test see "You unlocked the Challenge level!" on the result screen.
   The server enforces this: `/api/quiz?level=challenge` and `/api/submit` (level "challenge") check the pupil's
   practice result in Blob (`hasFullMarks` in `api/_lib.js`). A pupil who got full marks on another device must

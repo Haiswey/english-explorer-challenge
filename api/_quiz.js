@@ -9,7 +9,7 @@
 // sentence), build (tap word tiles in order).
 
 export const PRACTICE = {
-  id: 'mock-easy-3', level: 'practice',
+  id: 'mock-easy-4', level: 'practice',
   title: 'English Explorer Challenge',
   subtitle: "Let's practice!",
   parts: [
@@ -43,8 +43,8 @@ export const PRACTICE = {
       id: 'D', kind: 'build', name: 'Sentence building', marksEach: 3,
       help: 'Tap the words in the correct order to make a sentence.',
       qs: [
-        { id: 'D1', pic: '26BD', alt: 'a football', ans: ['I', 'play', 'football', 'on', 'Saturdays', '.'] },
-        { id: 'D2', pic: '1F47E', alt: 'a monster', ans: ['There', 'is', 'a', 'monster', 'in', 'the', 'cellar', '.'] },
+        { id: 'D1', pic: '26BD', alt: 'a football', ans: ['I', 'like', 'to', 'play', 'football', '.'] },
+        { id: 'D2', pic: '1F47E', alt: 'a monster in the cellar', ans: ['I', 'can', 'see', 'a', 'green', 'monster', '.'] },
         { id: 'D3', pic: '1F455', alt: 'a red shirt', ans: ['I', 'am', 'wearing', 'a', 'red', 'shirt', '.'] },
         { id: 'D4', pic: '1F9A9', alt: 'a child standing on one leg', ans: ['I', 'can', 'stand', 'on', 'one', 'leg', '.'] },
         { id: 'D5', pic: '1F3B8', alt: 'a guitar', ans: ["Let's", 'play', 'the', 'guitar', '.'] }
@@ -54,7 +54,7 @@ export const PRACTICE = {
 };
 
 export const CHALLENGE = {
-  id: 'challenge-1', level: 'challenge',
+  id: 'challenge-2', level: 'challenge',
   title: 'English Explorer Challenge',
   subtitle: 'Challenge level',
   parts: [
@@ -99,11 +99,11 @@ export const CHALLENGE = {
       id: 'D', kind: 'build', name: 'Sentence building', marksEach: 3,
       help: 'Tap the words in the correct order to make a sentence.',
       qs: [
-        { id: 'D1', pic: '1F916', alt: 'a robot', ans: ['The', 'robot', 'can', 'walk', 'and', 'talk', '.'] },
-        { id: 'D2', pic: '1F980', alt: 'a crab', ans: ['The', 'crab', 'is', 'on', 'the', 'beach', '.'] },
-        { id: 'D3', pic: '1F47B', alt: 'a ghost', ans: ['There', 'is', 'a', 'ghost', 'in', 'the', 'attic', '.'] },
-        { id: 'D4', pic: '1F457', alt: 'a dress', ans: ['She', 'is', 'wearing', 'a', 'new', 'dress', '.'] },
-        { id: 'D5', pic: '1F6B2', alt: 'a bicycle', ans: ['I', 'ride', 'my', 'bike', 'in', 'the', 'park', '.'] }
+        { id: 'D1', pic: '1F916', alt: 'a robot', ans: ['The', 'robot', 'has', 'two', 'long', 'arms', '.'] },
+        { id: 'D2', pic: '1F980', alt: 'a crab', ans: ['The', 'crab', 'has', 'two', 'big', 'claws', '.'] },
+        { id: 'D3', pic: '1F47B', alt: 'a ghost', ans: ['I', 'can', 'see', 'a', 'friendly', 'ghost', '.'] },
+        { id: 'D4', pic: '1F457', alt: 'a dress', ans: ['She', 'is', 'wearing', 'a', 'pink', 'dress', '.'] },
+        { id: 'D5', pic: '1F6B2', alt: 'a bicycle', ans: ['I', 'can', 'ride', 'my', 'bike', '.'] }
       ]
     }
   ]
