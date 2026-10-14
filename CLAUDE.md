@@ -31,7 +31,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.
 - `api/results.js` (POST): PIN check, then list or delete results. Any teacher PIN can LIST scores; only the ADMIN PIN
-  can DELETE them (`checkPin` returns 'admin' or 'teacher'; the teacher page shows a lock instead of the Delete button).
+  can DELETE them (`checkPin` returns 'admin' or 'teacher'; the teacher page simply has no Delete button for a teacher). The **Lock** button in the page header logs out
+  (forgets the PIN on that device), like the Lock button in the spelling app's admin page.
   Deleting an attempt also lets that pupil take the test again. The PIN is checked against the
   spelling app (`/api/admin`, action "load", which says whether the PIN is admin or teacher); a `QUIZ_PIN` env var counts as admin.
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
