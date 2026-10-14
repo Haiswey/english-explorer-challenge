@@ -23,6 +23,9 @@ tbody tr:hover { background: var(--sky); }
 .rank { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 19px; color: var(--sea); }
 .tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-left: 6px; }
 .tag.retake { background: var(--sky); color: var(--muted); }
+.pagehead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; padding-top: 12px; }
+#lock { display: inline-flex; align-items: center; gap: 8px; }
+#lock svg { flex: 0 0 auto; }
 .stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
 .stats div { background: var(--card); border: 2px solid var(--line); border-radius: 14px; padding: 10px 16px; }
 .stats b { font-family: "Baloo 2", system-ui, sans-serif; font-size: 26px; display: block; color: var(--ink); }
@@ -36,7 +39,8 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
 </head>
 <body>
 <main class="wrap">
-  <div style="padding-top:12px"><h1>English Explorer Challenge: results</h1><p class="muted" style="margin:4px 0 0">Ranked by total, then sentence building, then spelling, then the shorter time.</p></div>
+  <div class="pagehead"><div><h1>English Explorer Challenge: results</h1><p class="muted" style="margin:4px 0 0">Ranked by total, then sentence building, then spelling, then the shorter time.</p></div>
+    <button class="btn ghost" id="lock" hidden aria-label="Lock: log out"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button></div>
   <section id="login" class="panel" style="max-width:420px;margin-top:20px">
     <label for="pin" class="head" style="font-size:22px;display:block;margin-bottom:8px">Teacher PIN</label>
     <p class="muted" style="margin:0 0 10px;font-size:16px">Use the same PIN as the spelling app.</p>
@@ -76,9 +80,16 @@ async function fetchResults() {
 }
 async function login() {
   PIN = $('pin').value.trim() || PIN; $('perr').textContent = ''; $('go').disabled = true;
-  try { DATA = await fetchResults(); sessionStorage.setItem('kkx-pin', PIN); $('login').hidden = true; $('res').hidden = false; fillClasses(); render(); }
+  try { DATA = await fetchResults(); sessionStorage.setItem('kkx-pin', PIN); $('login').hidden = true; $('res').hidden = false; $('lock').hidden = false; fillClasses(); render(); }
   catch (e) { $('perr').textContent = e.message; sessionStorage.removeItem('kkx-pin'); }
   $('go').disabled = false;
+}
+// Lock = log out: forget the PIN on this device and go back to the PIN screen.
+function lockPage() {
+  try { sessionStorage.removeItem('kkx-pin'); } catch (e) {}
+  PIN = ''; DATA = null; $('pin').value = ''; $('perr').textContent = '';
+  if ($('dlg').open) $('dlg').close();
+  $('res').hidden = true; $('lock').hidden = true; $('login').hidden = false; $('pin').focus();
 }
 function fillClasses() {
   const keep = $('cls').value;
@@ -113,15 +124,16 @@ function render() {
     '<td class="num">' + mmss(r.seconds) + '</td><td>' + when(r.submittedAt) + '</td></tr>').join('')
     : '<tr><td colspan="' + (5 + DATA.parts.length) + '" class="muted" style="padding:20px">No answers yet. Results appear here as soon as pupils submit.</td></tr>';
   $('rows').querySelectorAll('tr[data-i]').forEach(tr => tr.onclick = () => detail(SHOWN[+tr.dataset.i]));
-  $('note').textContent = 'Only each pupil\u2019s first attempt is ranked. Tap a row to see the answers or delete an attempt.';
+  $('note').textContent = 'Only each pupil\u2019s first attempt is ranked. Tap a row to see the answers' + (isAdmin() ? ', or delete an attempt (this also lets that pupil try again).' : '.');
 }
+const isAdmin = () => DATA && DATA.role === 'admin';
 function detail(r) {
   $('dlg').innerHTML = '<h2 class="head" style="font-size:24px;color:var(--sea)">' + esc(r.name) + ', ' + esc(r.klass) + '</h2><p class="muted" style="margin:4px 0 12px">' + r.score + ' / ' + r.total + ' marks, ' + mmss(r.seconds) + ', ' + when(r.submittedAt) + (r.attempt > 1 ? ', retake ' + r.attempt : '') + '</p>' +
     '<div class="scroll"><table class="ans" style="min-width:0"><thead><tr><th>Q</th><th>Pupil\u2019s answer</th><th>Correct answer</th><th class="num">Marks</th></tr></thead><tbody>' +
     r.rows.map(x => '<tr><td>' + esc(x.q) + '</td><td>' + esc(x.given || '(no answer)') + '</td><td>' + esc(x.correct) + '</td><td class="num"><span class="got' + (x.got ? '' : ' zero') + '">' + x.got + '</span> / ' + x.max + '</td></tr>').join('') +
-    '</tbody></table></div><p class="err" id="derr"></p><div class="actions"><button class="btn danger" id="del">Delete this attempt</button><button class="btn" id="close">Close</button></div>';
+    '</tbody></table></div><p class="err" id="derr"></p><div class="actions">' + (isAdmin() ? '<button class="btn danger" id="del">Delete this attempt</button>' : '') + '<button class="btn" id="close">Close</button></div>';
   $('dlg').showModal(); $('close').onclick = () => $('dlg').close();
-  $('del').onclick = async () => {
+  if (isAdmin()) $('del').onclick = async () => {
     if (!confirm('Delete ' + r.name + '\u2019s ' + (r.attempt > 1 ? 'retake ' + r.attempt : 'attempt') + ' (' + r.score + ' / ' + r.total + ')? This cannot be undone.')) return;
     $('del').disabled = true; $('derr').textContent = '';
     try {
@@ -138,7 +150,7 @@ function csv() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv' }));
   a.download = 'english-explorer-' + $('lvl').value + '-' + ($('cls').value || 'year2') + '.csv'; a.click();
 }
-$('go').onclick = login; $('pin').onkeydown = e => { if (e.key === 'Enter') login(); };
+$('lock').onclick = lockPage; $('go').onclick = login; $('pin').onkeydown = e => { if (e.key === 'Enter') login(); };
 $('lvl').onchange = async () => { try { DATA = await fetchResults(); fillClasses(); render(); } catch (e) { alert(e.message); } };
 $('cls').onchange = render; $('retakes').onchange = render; $('find').oninput = render; $('csv').onclick = csv;
 $('refresh').onclick = async () => { $('refresh').disabled = true; try { DATA = await fetchResults(); fillClasses(); render(); } catch (e) { alert(e.message); } $('refresh').disabled = false; };

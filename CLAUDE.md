@@ -21,12 +21,20 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Pupil names and Year 2 classes come live from the spelling app (https://kk2spelling.vercel.app/api/roster,
   needs a class and at least 3 typed letters). Never copy the full name list into this project.
 - Pupil names are compared without capitals or extra spaces (saved progress on the device, the challenge unlock in
-  `hasFullMarks`, and first attempt vs retake on the teacher page), so "Tan Mei Ling" and "tan mei ling" are one pupil.
+  `hasFullMarks`, first attempt vs retake on the teacher page, and the one-attempt rule), so "Tan Mei Ling" and
+  "tan mei ling" are one pupil.
+- ONE ATTEMPT per pupil per test (practice and challenge). The first submit writes a marker file
+  `attempts/<quiz id>/<class>-<name hash>.json`; later submits get HTTP 409 with the first result and the page shows it.
+  `/api/attempt` tells the page before the pupil starts. Results saved before markers existed are also found.
+  To allow a retake, the teacher deletes that pupil's attempt on the teacher page (this removes the marker).
 - The name screen has a "My name is not here" button: the pupil types their full name (for example a new transfer pupil).
   `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.
-- `api/results.js` (POST): teacher PIN check, then list or delete results. The PIN is checked against the
-  spelling app's teacher PIN (`/api/admin`, action "load"); a `QUIZ_PIN` env var also works.
+- `api/results.js` (POST): PIN check, then list or delete results. Any teacher PIN can LIST scores; only the ADMIN PIN
+  can DELETE them (`checkPin` returns 'admin' or 'teacher'; the teacher page simply has no Delete button for a teacher). The **Lock** button in the page header logs out
+  (forgets the PIN on that device), like the Lock button in the spelling app's admin page.
+  Deleting an attempt also lets that pupil take the test again. The PIN is checked against the
+  spelling app (`/api/admin`, action "load", which says whether the PIN is admin or teacher); a `QUIZ_PIN` env var counts as admin.
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 

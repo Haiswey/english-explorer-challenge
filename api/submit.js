@@ -1,4 +1,4 @@
-import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks } from './_lib.js';
+import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt } from './_lib.js';
 import { PRACTICE, getQuiz, mark } from './_quiz.js';
 
 export default async function handler(req, res) {
@@ -13,6 +13,10 @@ export default async function handler(req, res) {
     if (QUIZ.level === 'challenge' && !(await hasFullMarks(PRACTICE, klass, name))) {
       return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice test.' });
     }
+
+    // One attempt only: a second submit (another device, a reload, a retake) gets the pupil's first result back.
+    const first = await getAttempt(QUIZ, klass, name);
+    if (first) return res.status(409).json({ already: true, ...first });
 
     let verified = null;
     try {
@@ -32,8 +36,12 @@ export default async function handler(req, res) {
       score: m.score, total: m.total, parts: m.parts, rows: m.rows,
       startedAt, submittedAt: now, seconds: Math.round((now - startedAt) / 1000)
     };
-    await saveResult(QUIZ.id, rec);
-    res.status(200).json({ score: m.score, total: m.total, parts: m.parts });
+    const summary = { score: m.score, total: m.total, parts: m.parts };
+    const earlier = await claimAttempt(QUIZ, klass, name, summary);
+    if (earlier) return res.status(409).json({ already: true, ...earlier });
+    try { await saveResult(QUIZ.id, rec); }
+    catch (e) { await releaseAttempt(QUIZ, klass, name); throw e; } // not saved: let the pupil submit again
+    res.status(200).json(summary);
   } catch (e) {
     res.status(500).json({ error: 'Your answers were not saved. Tap Submit again, or tell your teacher.' });
   }
