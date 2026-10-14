@@ -17,9 +17,10 @@ const app = document.getElementById('app');
 let QZ = null, QP = null, S = null;
 const ALL = () => QZ.parts.flatMap(p => p.qs.map(q => ({ ...q, part: p })));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const key = () => 'kkx-' + QZ.id + '-' + S.klass + '-' + S.name;
+const nameKey = n => String(n).replace(/\s+/g, ' ').trim().toLowerCase();
+const key = () => 'kkx-' + QZ.id + '-' + S.klass + '-' + nameKey(S.name);
 const save = () => { try { localStorage.setItem(key(), JSON.stringify(S)); } catch (e) {} };
-const load = (k, n) => { try { return JSON.parse(localStorage.getItem('kkx-' + QZ.id + '-' + k + '-' + n) || 'null'); } catch (e) { return null; } };
+const load = (k, n) => { try { return JSON.parse(localStorage.getItem('kkx-' + QZ.id + '-' + k + '-' + nameKey(n)) || 'null'); } catch (e) { return null; } };
 function emoji(code) { return code.split('-').map(h => String.fromCodePoint(parseInt(h, 16))).join(''); }
 function pic(q) {
   return '<div class="pic">' + (PICS[q.pic] ? '<img src="' + PICS[q.pic] + '" alt="' + esc(q.alt) + '">' : '<span class="emo" role="img" aria-label="' + esc(q.alt) + '">' + esc(emoji(q.pic)) + '</span>') + '</div>';

@@ -89,7 +89,7 @@ function fillClasses() {
 function tagAttempts(list) {
   const seen = {};
   return list.slice().sort((a, b) => a.submittedAt - b.submittedAt).map(r => {
-    const k = r.klass + '|' + r.name; seen[k] = (seen[k] || 0) + 1; return { ...r, attempt: seen[k] };
+    const k = r.klass + '|' + String(r.name).replace(/\s+/g, ' ').trim().toLowerCase(); seen[k] = (seen[k] || 0) + 1; return { ...r, attempt: seen[k] };
   });
 }
 const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0)) || ((b.parts.B || 0) - (a.parts.B || 0)) || (a.seconds - b.seconds);

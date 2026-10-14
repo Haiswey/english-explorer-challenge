@@ -80,8 +80,9 @@ export async function deleteResult(testId, url) {
 
 // A pupil unlocks the challenge level by scoring every mark in the practice test.
 export async function hasFullMarks(practice, klass, name) {
-  const k = String(klass || '').trim().toUpperCase(), n = String(name || '').trim();
+  const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const k = String(klass || '').trim().toUpperCase(), n = norm(name);
   if (!k || !n) return false;
   const all = await getResults(practice.id);
-  return all.some(r => r.klass === k && r.name === n && r.score === r.total);
+  return all.some(r => r.klass === k && norm(r.name) === n && r.score === r.total);
 }
