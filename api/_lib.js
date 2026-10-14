@@ -34,17 +34,21 @@ export async function rosterSearch(klass, q) {
 }
 
 // Same teacher PIN as the spelling app (checked by the spelling app itself), or QUIZ_PIN if set in this project.
+// Returns 'admin' (the spelling app's admin PIN, or QUIZ_PIN), 'teacher' (any teacher PIN) or null (wrong PIN).
+// Teachers may look at scores; only the admin may delete them.
 export async function checkPin(pin) {
   pin = String(pin || '').trim();
-  if (!pin) return false;
-  if (process.env.QUIZ_PIN && pin === process.env.QUIZ_PIN) return true;
+  if (!pin) return null;
+  if (process.env.QUIZ_PIN && pin === process.env.QUIZ_PIN) return 'admin';
   try {
     const r = await fetch(`${SPELL}/api/admin`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pin, action: 'load' })
     });
-    return r.status === 200;
-  } catch { return false; }
+    if (r.status !== 200) return null;
+    const j = await r.json().catch(() => ({}));
+    return j && j.me && j.me.role === 'admin' ? 'admin' : 'teacher';
+  } catch { return null; }
 }
 
 export async function saveResult(testId, rec) {
