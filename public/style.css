@@ -1,3 +1,9 @@
+/* Fonts: Andika and Baloo 2 (SIL Open Font License), embedded so no outside site is needed */
+@font-face { font-family: "Andika"; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/andika-400.woff2) format("woff2"); }
+@font-face { font-family: "Andika"; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/andika-700.woff2) format("woff2"); }
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 600; font-display: swap; src: url(fonts/baloo2-600.woff2) format("woff2"); }
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/baloo2-700.woff2) format("woff2"); }
+@font-face { font-family: "Baloo 2"; font-style: normal; font-weight: 800; font-display: swap; src: url(fonts/baloo2-800.woff2) format("woff2"); }
 /* English Explorer Challenge: an explorer's trail across a sky-blue map */
 :root {
   --sky: #eaf4fb;     /* page */
@@ -131,3 +137,9 @@ img { max-width: 100%; }
 .score .parts span { background: var(--sky); border-radius: 12px; padding: 6px 14px; font-size: 18px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } .stone.now { transform: none; } }
 .tiles .tile[data-word]:disabled { display: none; }
+.slot.type { text-align: center; font-family: inherit; color: var(--ink); padding: 0; box-sizing: border-box; caret-color: transparent; }
+.slot.type:not(:placeholder-shown) { border-style: solid; background: var(--sea-soft); }
+.slot.type:focus { border-style: solid; outline: 3px solid var(--sun); outline-offset: 1px; }
+.gapline { font-size: clamp(22px, 6vw, 28px); font-weight: 700; text-align: center; margin: 0 0 16px; line-height: 1.5; }
+.gapline .blank { display: inline-block; min-width: 90px; border-bottom: 4px solid var(--sea); color: var(--sea); padding: 0 6px; }
+.unlock { margin-top: 20px; padding: 16px; border-radius: 16px; background: var(--sea-soft); border: 3px solid var(--sea); }

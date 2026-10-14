@@ -77,3 +77,11 @@ export async function deleteResult(testId, url) {
   if (!/^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\//i.test(u) || !u.includes(`/results/${safe}/`)) throw new Error('That is not a result from this quiz.');
   await del(u);
 }
+
+// A pupil unlocks the challenge level by scoring every mark in the practice test.
+export async function hasFullMarks(practice, klass, name) {
+  const k = String(klass || '').trim().toUpperCase(), n = String(name || '').trim();
+  if (!k || !n) return false;
+  const all = await getResults(practice.id);
+  return all.some(r => r.klass === k && r.name === n && r.score === r.total);
+}
