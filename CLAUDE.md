@@ -26,10 +26,10 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 
-## Current test: mock-easy-2 (easy level, 19 questions, 35 marks)
+## Current test: mock-easy-3 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
-- B Spelling: picture, tap letter tiles for 2 missing letters, 6 x 2 marks (1 per letter)
-- D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place)
+- B Spelling: picture, TYPE the 2 missing letters (no letter choices shown), 6 x 2 marks (1 per letter)
+- D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place). Tiles are lower case; the page capitalises the first word, "I" and days when placed, so a capital never shows the first word
 - No listening items (audio may not work on some school devices).
 
 ## Rules from Miss Irene
