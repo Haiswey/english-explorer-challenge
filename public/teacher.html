@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Results · English Explorer Challenge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<style>
+body { font-size: 17px; }
+.wrap { max-width: 1060px; }
+h1 { font-size: 34px; color: var(--sea); }
+.bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 16px 0; }
+.bar select, .bar input { font: inherit; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+.bar .btn { font-size: 17px; min-height: 44px; padding: 6px 18px; }
+.scroll { overflow-x: auto; background: var(--card); border: 2px solid var(--line); border-radius: 16px; }
+table { border-collapse: collapse; width: 100%; min-width: 720px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-family: "Baloo 2", system-ui, sans-serif; font-size: 16px; color: var(--muted); font-weight: 700; position: sticky; top: 0; background: var(--card); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--sky); }
+.rank { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 19px; color: var(--sea); }
+.tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-left: 6px; }
+.tag.retake { background: var(--sky); color: var(--muted); }
+.stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.stats div { background: var(--card); border: 2px solid var(--line); border-radius: 14px; padding: 10px 16px; }
+.stats b { font-family: "Baloo 2", system-ui, sans-serif; font-size: 26px; display: block; color: var(--ink); }
+dialog { border: 2px solid var(--line); border-radius: 18px; background: var(--card); color: var(--ink); max-width: 640px; width: calc(100% - 32px); padding: 20px; }
+dialog::backdrop { background: rgba(10, 30, 45, .45); }
+.ans td { white-space: normal; }
+.got { font-weight: 700; color: var(--jungle); }
+.got.zero { color: var(--coral); }
+.btn.danger { background: transparent; color: var(--coral); border: 2px solid var(--coral); box-shadow: none; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div style="padding-top:12px"><h1>English Explorer Challenge: results</h1><p class="muted" style="margin:4px 0 0">Mock test, easy level. Ranked by total, then sentence building, then spelling, then the shorter time.</p></div>
+  <section id="login" class="panel" style="max-width:420px;margin-top:20px">
+    <label for="pin" class="head" style="font-size:22px;display:block;margin-bottom:8px">Teacher PIN</label>
+    <p class="muted" style="margin:0 0 10px;font-size:16px">Use the same PIN as the spelling app.</p>
+    <input id="pin" type="password" class="name-in" style="font-size:20px" autocomplete="current-password">
+    <p class="err" id="perr"></p>
+    <button class="btn" id="go">Show results</button>
+  </section>
+  <section id="res" hidden>
+    <div class="bar">
+      <label>Class <select id="cls"><option value="">All Year 2</option></select></label>
+      <label><input type="checkbox" id="retakes"> Show retakes</label>
+      <input id="find" placeholder="Find a name" aria-label="Find a name">
+      <button class="btn ghost" id="refresh">Refresh</button>
+      <button class="btn ghost" id="csv">Download CSV</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="scroll"><table><thead><tr><th class="num">Rank</th><th>Name</th><th>Class</th><th class="num">Total</th><th class="num">Vocabulary /8</th><th class="num">Spelling /12</th><th class="num">Sentences /15</th><th class="num">Time</th><th>Submitted</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="muted" id="note" style="font-size:15px"></p>
+  </section>
+  <dialog id="dlg"></dialog>
+</main>
+<script>
+(function () {
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let DATA = null, PIN = sessionStorage.getItem('kkx-pin') || '';
+const mmss = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const when = t => new Date(t).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const PARTNAME = { A: 'Vocabulary', B: 'Spelling', D: 'Sentence building' };
+
+async function fetchResults() {
+  const r = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN }) });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || 'Could not load results.');
+  return j;
+}
+async function login() {
+  PIN = $('pin').value.trim() || PIN; $('perr').textContent = ''; $('go').disabled = true;
+  try { DATA = await fetchResults(); sessionStorage.setItem('kkx-pin', PIN); $('login').hidden = true; $('res').hidden = false; fillClasses(); render(); }
+  catch (e) { $('perr').textContent = e.message; sessionStorage.removeItem('kkx-pin'); }
+  $('go').disabled = false;
+}
+function fillClasses() {
+  const keep = $('cls').value;
+  const cs = [...new Set(DATA.results.map(r => r.klass))].sort();
+  $('cls').innerHTML = '<option value="">All Year 2</option>' + cs.map(c => '<option>' + esc(c) + '</option>').join('');
+  $('cls').value = cs.includes(keep) ? keep : '';
+}
+function tagAttempts(list) {
+  const seen = {};
+  return list.slice().sort((a, b) => a.submittedAt - b.submittedAt).map(r => {
+    const k = r.klass + '|' + r.name; seen[k] = (seen[k] || 0) + 1; return { ...r, attempt: seen[k] };
+  });
+}
+const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0)) || ((b.parts.B || 0) - (a.parts.B || 0)) || (a.seconds - b.seconds);
+const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && a.seconds === b.seconds;
+let SHOWN = [];
+function render() {
+  const cls = $('cls').value, q = $('find').value.trim().toLowerCase(), showRe = $('retakes').checked;
+  let list = tagAttempts(DATA.results).filter(r => !cls || r.klass === cls);
+  const official = list.filter(r => r.attempt === 1).sort(cmp);
+  let rank = 0; official.forEach((r, i) => { if (i === 0 || !same(r, official[i - 1])) rank = i + 1; r.rank = rank; });
+  let rows = official.concat(showRe ? list.filter(r => r.attempt > 1).sort(cmp) : []);
+  if (q) rows = rows.filter(r => r.name.toLowerCase().includes(q));
+  SHOWN = rows;
+  const avg = official.length ? (official.reduce((s, r) => s + r.score, 0) / official.length).toFixed(1) : '0';
+  const ties = official.filter((r, i) => official.some((o, j) => j !== i && o.score === r.score)).length;
+  $('stats').innerHTML = '<div>Pupils<b>' + official.length + '</b></div><div>Average<b>' + avg + ' / ' + DATA.total + '</b></div><div>Highest<b>' + (official[0] ? official[0].score : '–') + '</b></div><div>Sharing a total<b>' + ties + '</b></div>';
+  $('rows').innerHTML = rows.length ? rows.map((r, i) => '<tr data-i="' + i + '"><td class="num rank">' + (r.attempt === 1 ? r.rank : '') + '</td><td>' + esc(r.name) +
+    (r.attempt > 1 ? '<span class="tag retake">retake ' + r.attempt + '</span>' : '') + (r.verified === false ? '<span class="tag">name not on list</span>' : '') + '</td><td>' + esc(r.klass) +
+    '</td><td class="num"><b>' + r.score + '</b></td><td class="num">' + (r.parts.A ?? 0) + '</td><td class="num">' + (r.parts.B ?? 0) + '</td><td class="num">' + (r.parts.D ?? 0) +
+    '</td><td class="num">' + mmss(r.seconds) + '</td><td>' + when(r.submittedAt) + '</td></tr>').join('')
+    : '<tr><td colspan="9" class="muted" style="padding:20px">No answers yet. Results appear here as soon as pupils submit.</td></tr>';
+  $('rows').querySelectorAll('tr[data-i]').forEach(tr => tr.onclick = () => detail(SHOWN[+tr.dataset.i]));
+  $('note').textContent = 'Only each pupil\u2019s first attempt is ranked. Tap a row to see the answers or delete an attempt.';
+}
+function detail(r) {
+  $('dlg').innerHTML = '<h2 class="head" style="font-size:24px;color:var(--sea)">' + esc(r.name) + ', ' + esc(r.klass) + '</h2><p class="muted" style="margin:4px 0 12px">' + r.score + ' / ' + r.total + ' marks, ' + mmss(r.seconds) + ', ' + when(r.submittedAt) + (r.attempt > 1 ? ', retake ' + r.attempt : '') + '</p>' +
+    '<div class="scroll"><table class="ans" style="min-width:0"><thead><tr><th>Q</th><th>Pupil\u2019s answer</th><th>Correct answer</th><th class="num">Marks</th></tr></thead><tbody>' +
+    r.rows.map(x => '<tr><td>' + esc(x.q) + '</td><td>' + esc(x.given || '(no answer)') + '</td><td>' + esc(x.correct) + '</td><td class="num"><span class="got' + (x.got ? '' : ' zero') + '">' + x.got + '</span> / ' + x.max + '</td></tr>').join('') +
+    '</tbody></table></div><p class="err" id="derr"></p><div class="actions"><button class="btn danger" id="del">Delete this attempt</button><button class="btn" id="close">Close</button></div>';
+  $('dlg').showModal(); $('close').onclick = () => $('dlg').close();
+  $('del').onclick = async () => {
+    if (!confirm('Delete ' + r.name + '\u2019s ' + (r.attempt > 1 ? 'retake ' + r.attempt : 'attempt') + ' (' + r.score + ' / ' + r.total + ')? This cannot be undone.')) return;
+    $('del').disabled = true; $('derr').textContent = '';
+    try {
+      const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, action: 'delete', url: r._url }) });
+      const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not deleted.');
+      DATA.results = DATA.results.filter(o => o._url !== r._url); $('dlg').close(); fillClasses(); render();
+    } catch (e) { $('derr').textContent = e.message; $('del').disabled = false; }
+  };
+}
+function csv() {
+  const head = ['Rank', 'Name', 'Class', 'Attempt', 'Total', 'Vocabulary', 'Spelling', 'Sentence building', 'Seconds', 'Submitted'];
+  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score, r.parts.A ?? 0, r.parts.B ?? 0, r.parts.D ?? 0, r.seconds, new Date(r.submittedAt).toISOString()]));
+  const text = lines.map(l => l.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv' }));
+  a.download = 'english-explorer-mock-' + ($('cls').value || 'year2') + '.csv'; a.click();
+}
+$('go').onclick = login; $('pin').onkeydown = e => { if (e.key === 'Enter') login(); };
+$('cls').onchange = render; $('retakes').onchange = render; $('find').oninput = render; $('csv').onclick = csv;
+$('refresh').onclick = async () => { $('refresh').disabled = true; try { DATA = await fetchResults(); fillClasses(); render(); } catch (e) { alert(e.message); } $('refresh').disabled = false; };
+if (PIN) login();
+})();
+</script>
+</body>
+</html>
