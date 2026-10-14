@@ -9,6 +9,6 @@ export default async function handler(req, res) {
   if (!klass || !name) return res.status(200).json({ done: false });
   try {
     const result = await getAttempt(getQuiz(q.level), klass, name);
-    res.status(200).json(result ? { done: true, result } : { done: false });
+    res.status(200).json(result ? { done: true, result: { score: result.score, total: result.total, parts: result.parts } } : { done: false });
   } catch { res.status(200).json({ done: false }); }
 }

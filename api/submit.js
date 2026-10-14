@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
     // One attempt only: a second submit (another device, a reload, a retake) gets the pupil's first result back.
     const first = await getAttempt(QUIZ, klass, name);
-    if (first) return res.status(409).json({ already: true, ...first });
+    if (first) return res.status(409).json({ already: true, score: first.score, total: first.total, parts: first.parts });
 
     let verified = null;
     try {
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     };
     const summary = { score: m.score, total: m.total, parts: m.parts };
     const earlier = await claimAttempt(QUIZ, klass, name, summary);
-    if (earlier) return res.status(409).json({ already: true, ...earlier });
+    if (earlier) return res.status(409).json({ already: true, score: earlier.score, total: earlier.total, parts: earlier.parts });
     try { await saveResult(QUIZ.id, rec); }
     catch (e) { await releaseAttempt(QUIZ, klass, name); throw e; } // not saved: let the pupil submit again
     res.status(200).json(summary);

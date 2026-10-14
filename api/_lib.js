@@ -13,7 +13,7 @@ export async function readBody(req) {
 
 let classCache = { at: 0, list: [] };
 export async function year2Classes() {
-  if (classCache.list.length && Date.now() - classCache.at < 10 * 60 * 1000) return classCache.list;
+  if (classCache.list.length && Date.now() - classCache.at < 60 * 60 * 1000) return classCache.list;
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   const found = await Promise.all(letters.map(async L => {
     try {
@@ -72,26 +72,40 @@ function blobUrlFor(pathname) {
   return `https://${storeId.toLowerCase()}.public.blob.vercel-storage.com/${pathname}`;
 }
 
-let legacy = { at: 0, id: '', map: new Map() };
-async function legacyAttempt(quiz, klass, name) {
-  if (legacy.id !== quiz.id || Date.now() - legacy.at > 60000) {
-    const map = new Map();
-    for (const r of (await getResults(quiz.id)).sort((a, b) => a.submittedAt - b.submittedAt)) {
-      const k = attemptKey(r.klass, r.name);
-      if (!map.has(k)) map.set(k, { score: r.score, total: r.total, parts: r.parts });
-    }
-    legacy = { at: Date.now(), id: quiz.id, map };
+// Results saved before markers existed get their marker ONCE: the first pupil request after the update lists the
+// results one time, writes the missing markers and a "done" flag, and from then on no pupil request ever lists.
+// A marker holds the pupil's FIRST result (what they see) and `full` = any attempt had every mark (the challenge unlock).
+const doneFlagPath = quiz => `attempts/${safeId(quiz.id)}/_done.json`;
+const backfilled = new Set();
+async function readJson(path) {
+  try {
+    const r = await fetch(blobUrlFor(path) + '?t=' + Date.now(), { cache: 'no-store' });
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
+async function ensureBackfilled(quiz) {
+  if (backfilled.has(quiz.id)) return;
+  if (await readJson(doneFlagPath(quiz))) { backfilled.add(quiz.id); return; }
+  const byPupil = new Map();
+  for (const r of (await getResults(quiz.id)).sort((a, b) => a.submittedAt - b.submittedAt)) {
+    const k = attemptKey(r.klass, r.name), cur = byPupil.get(k);
+    if (!cur) byPupil.set(k, { klass: r.klass, name: r.name, score: r.score, total: r.total, parts: r.parts, full: r.score === r.total });
+    else if (r.score === r.total) cur.full = true;
   }
-  return legacy.map.get(attemptKey(klass, name)) || null;
+  for (const p of byPupil.values()) {
+    if (await readJson(markerPath(quiz.id, p.klass, p.name))) continue;
+    await put(markerPath(quiz.id, p.klass, p.name), JSON.stringify({ score: p.score, total: p.total, parts: p.parts, full: p.full }), { access: 'public', addRandomSuffix: false, allowOverwrite: false, contentType: 'application/json' });
+  }
+  await put(doneFlagPath(quiz), JSON.stringify({ at: Date.now() }), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+  backfilled.add(quiz.id);
 }
 
-// The pupil's first result for this test, or null when they have not done it yet.
+// The pupil's first result for this test (with `full`), or null when they have not done it yet. Only cheap reads.
 export async function getAttempt(quiz, klass, name) {
-  try {
-    const r = await fetch(blobUrlFor(markerPath(quiz.id, klass, name)) + '?t=' + Date.now(), { cache: 'no-store' });
-    if (r.ok) return await r.json();
-  } catch {}
-  return legacyAttempt(quiz, klass, name);
+  const found = await readJson(markerPath(quiz.id, klass, name));
+  if (found) return found;
+  await ensureBackfilled(quiz);
+  return readJson(markerPath(quiz.id, klass, name));
 }
 
 // Claims the pupil's one attempt. Returns null when claimed, or the earlier result when there already is one.
@@ -99,7 +113,7 @@ export async function claimAttempt(quiz, klass, name, summary) {
   const before = await getAttempt(quiz, klass, name);
   if (before) return before;
   try {
-    await put(markerPath(quiz.id, klass, name), JSON.stringify(summary), { access: 'public', addRandomSuffix: false, allowOverwrite: false, contentType: 'application/json' });
+    await put(markerPath(quiz.id, klass, name), JSON.stringify({ ...summary, full: summary.score === summary.total }), { access: 'public', addRandomSuffix: false, allowOverwrite: false, contentType: 'application/json' });
     return null;
   } catch (e) {
     if (/exist/i.test(String(e && e.message))) return (await getAttempt(quiz, klass, name)) || summary;
@@ -109,7 +123,6 @@ export async function claimAttempt(quiz, klass, name, summary) {
 
 export async function releaseAttempt(quiz, klass, name) {
   try { await del(blobUrlFor(markerPath(quiz.id, klass, name))); } catch {}
-  legacy.at = 0;
 }
 
 export async function getResults(testId) {
@@ -144,6 +157,6 @@ export async function deleteResult(testId, url) {
 export async function hasFullMarks(practice, klass, name) {
   const k = String(klass || '').trim().toUpperCase(), n = normName(name);
   if (!k || !n) return false;
-  const all = await getResults(practice.id);
-  return all.some(r => r.klass === k && normName(r.name) === n && r.score === r.total);
+  const a = await getAttempt(practice, k, n); // a cheap read of the pupil's marker, no list
+  return !!a && (a.full === true || a.score === a.total);
 }
