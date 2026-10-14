@@ -55,25 +55,39 @@ function homeScreen() {
 
 function nameScreen(klass) {
   app.innerHTML = '<div class="top"><button class="btn ghost" id="back">Back</button><span class="who">Class ' + esc(klass) + '</span></div>' +
-    '<section class="panel" style="margin-top:16px"><label for="nm" class="head" style="font-size:26px;display:block;margin-bottom:10px">Type your name</label>' +
-    '<input id="nm" class="name-in" autocomplete="off" autocapitalize="words" spellcheck="false">' +
-    '<p class="muted" id="hint" style="font-size:17px;margin:8px 0 0">Type the first 2 or 3 letters, then tap your name.</p><div class="names" id="names"></div></section>';
+    '<section class="panel" style="margin-top:16px"><label for="nm" id="lab" class="head" style="font-size:26px;display:block;margin-bottom:10px">Type your name</label>' +
+    '<input id="nm" class="name-in" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="80">' +
+    '<p class="muted" id="hint" style="font-size:17px;margin:8px 0 0">Type the first 2 or 3 letters, then tap your name.</p><div class="names" id="names"></div>' +
+    '<div class="actions" style="justify-content:center;margin-top:14px"><button class="btn ghost" id="notHere">My name is not here</button><button class="btn go" id="goFree" hidden disabled>Continue</button></div></section>';
   document.getElementById('back').onclick = homeScreen;
   const inp = document.getElementById('nm'), box = document.getElementById('names'), hint = document.getElementById('hint');
-  let t = null, seq = 0;
+  const lab = document.getElementById('lab'), notHere = document.getElementById('notHere'), goFree = document.getElementById('goFree');
+  let t = null, seq = 0, free = false;
+  const clean = s => s.replace(/\s+/g, ' ').trim();
   inp.focus();
+  // A new pupil (for example a transfer) may not be on the name list yet: let them type their full name.
+  const setFree = on => {
+    free = on; seq++; clearTimeout(t); inp.value = ''; box.innerHTML = '';
+    lab.textContent = on ? 'Type your full name' : 'Type your name';
+    hint.textContent = on ? 'Write your full name, then tap Continue.' : 'Type the first 2 or 3 letters, then tap your name.';
+    notHere.textContent = on ? 'Back to the name list' : 'My name is not here';
+    goFree.hidden = !on; goFree.disabled = true; inp.focus();
+  };
+  notHere.onclick = () => setFree(!free);
+  goFree.onclick = () => { const n = clean(inp.value); if (n.length >= 3) pickName(klass, n); };
   inp.oninput = () => {
-    clearTimeout(t); const q = inp.value.trim();
+    clearTimeout(t); const q = clean(inp.value);
+    if (free) { goFree.disabled = q.length < 3; return; }
     if (q.length < 2) { box.innerHTML = ''; hint.textContent = 'Type the first 2 or 3 letters, then tap your name.'; return; }
     t = setTimeout(async () => {
       const my = ++seq;
       try {
         const r = await fetch('/api/roster?klass=' + encodeURIComponent(klass) + '&q=' + encodeURIComponent(q), { cache: 'no-store' });
-        const j = await r.json(); if (my !== seq) return;
+        const j = await r.json(); if (my !== seq || free) return;
         box.innerHTML = (j.names || []).map(n => '<button data-n="' + esc(n) + '">' + esc(n) + '</button>').join('');
-        hint.textContent = (j.names || []).length ? 'Tap your name.' : 'No name found. Check the spelling, or ask your teacher.';
+        hint.textContent = (j.names || []).length ? 'Tap your name.' : 'No name found. Check the spelling, or tap "My name is not here".';
         box.querySelectorAll('[data-n]').forEach(b => b.onclick = () => pickName(klass, b.dataset.n));
-      } catch (e) { hint.textContent = 'Names did not load. Check the internet.'; }
+      } catch (e) { hint.textContent = 'Names did not load. Check the internet, or tap "My name is not here".'; }
     }, 250);
   };
 }
