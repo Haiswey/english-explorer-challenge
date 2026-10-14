@@ -23,6 +23,11 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Pupil names are compared without capitals or extra spaces (saved progress on the device, the challenge unlock in
   `hasFullMarks`, first attempt vs retake on the teacher page, and the one-attempt rule), so "Tan Mei Ling" and
   "tan mei ling" are one pupil.
+- BLOB OPERATIONS (list/put/copy are "advanced" and metered): pupil requests must never call `list()`. Pupil paths only
+  read single files by URL (cheap). A pupil's marker `attempts/<quiz id>/<class>-<hash>.json` holds their first result and
+  `full` (any attempt had every mark), so the challenge unlock is one marker read, not a scan of all results. Results
+  saved before markers existed get markers once (`ensureBackfilled` in `api/_lib.js`, flag file `attempts/<id>/_done.json`).
+  Cost: a submit is 2 puts (marker + result); the teacher page lists once per load. The class list is cached 60 minutes.
 - ONE ATTEMPT per pupil per test (practice and challenge). The first submit writes a marker file
   `attempts/<quiz id>/<class>-<name hash>.json`; later submits get HTTP 409 with the first result and the page shows it.
   `/api/attempt` tells the page before the pupil starts. Results saved before markers existed are also found.
