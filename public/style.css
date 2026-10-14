@@ -143,3 +143,6 @@ img { max-width: 100%; }
 .gapline { font-size: clamp(22px, 6vw, 28px); font-weight: 700; text-align: center; margin: 0 0 16px; line-height: 1.5; }
 .gapline .blank { display: inline-block; min-width: 90px; border-bottom: 4px solid var(--sea); color: var(--sea); padding: 0 6px; }
 .unlock { margin-top: 20px; padding: 16px; border-radius: 16px; background: var(--sea-soft); border: 3px solid var(--sea); }
+.pic { height: auto; }
+.pic img, .pic .emo { width: min(240px, 62vw); height: min(240px, 62vw); border-radius: 20px; background: #fff; object-fit: contain; }
+.pic .emo { display: grid; place-items: center; line-height: 1; }
