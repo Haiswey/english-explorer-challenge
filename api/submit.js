@@ -17,8 +17,12 @@ export default async function handler(req, res) {
     let verified = null;
     try {
       const classes = await year2Classes();
-      const names = classes.includes(klass) ? await rosterSearch(klass, name) : [];
-      verified = names.includes(name);
+      // The roster search only matches the start of one word (as pupils type it), so search with the
+      // first word that has at least 3 letters, then look for the exact full name in the answer.
+      const word = name.split(/\s+/).find(w => w.length >= 3) || name;
+      const names = classes.includes(klass) ? await rosterSearch(klass, word) : [];
+      const want = name.replace(/\s+/g, ' ').toLowerCase();
+      verified = names.some(n => n.replace(/\s+/g, ' ').trim().toLowerCase() === want);
     } catch { verified = null; } // name list unreachable: keep the answers, mark as unchecked
 
     const m = mark(QUIZ, body.answers);
