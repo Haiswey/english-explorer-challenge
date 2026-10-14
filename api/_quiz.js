@@ -9,7 +9,7 @@
 // sentence), build (tap word tiles in order).
 
 export const PRACTICE = {
-  id: 'mock-easy-4', level: 'practice',
+  id: 'mock-easy-3', level: 'practice',
   title: 'English Explorer Challenge',
   subtitle: "Let's practice!",
   parts: [
@@ -54,7 +54,7 @@ export const PRACTICE = {
 };
 
 export const CHALLENGE = {
-  id: 'challenge-2', level: 'challenge',
+  id: 'challenge-1', level: 'challenge',
   title: 'English Explorer Challenge',
   subtitle: 'Challenge level',
   parts: [
