@@ -14,8 +14,11 @@ h1 { font-size: 34px; color: var(--sea); }
 .bar select, .bar input { font: inherit; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
 .bar .btn { font-size: 17px; min-height: 44px; padding: 6px 18px; }
 .scroll { overflow-x: auto; background: var(--card); border: 2px solid var(--line); border-radius: 16px; }
-table { border-collapse: collapse; width: 100%; min-width: 560px; }
-th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 8px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+/* The table always fits the page: the Name column takes the leftover width and a long name wraps onto a second line. */
+th.nm, td.nm { white-space: normal; width: 99%; overflow-wrap: anywhere; }
+td.when { white-space: nowrap; }
 th.part { white-space: normal; line-height: 1.15; vertical-align: bottom; }
 th.part .hn { display: block; }
 th.part .hm { display: block; font-weight: 600; }
@@ -24,7 +27,20 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tbody tr { cursor: pointer; }
 tbody tr:hover { background: var(--sky); }
 .rank { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 19px; color: var(--sea); }
-.tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-left: 6px; }
+.tags { margin-top: 3px; }
+.tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-right: 6px; display: inline-block; }
+/* Narrow screens (phones, small tablets): each pupil is a small card, no sideways scrolling */
+@media (max-width: 900px) {
+  table, tbody { display: block; width: 100%; }
+  thead { display: none; }
+  tbody tr { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  td { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border: 0; padding: 2px 0; white-space: normal; text-align: right; }
+  td::before { content: attr(data-l); color: var(--muted); font-size: 13px; font-weight: 700; text-align: left; }
+  td.nm { grid-column: 1 / -1; order: -2; display: block; width: auto; text-align: left; font-size: 18px; font-weight: 700; padding-bottom: 4px; }
+  td.nm::before { content: none; }
+  td.rank { order: -1; }
+  td.when { white-space: normal; }
+}
 .tag.retake { background: var(--sky); color: var(--muted); }
 .pagehead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; padding-top: 12px; }
 #lock { display: inline-flex; align-items: center; gap: 8px; }
@@ -110,7 +126,7 @@ const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0
 const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && a.seconds === b.seconds;
 let SHOWN = [];
 function render() {
-  $('thead').innerHTML = '<th class="num">Rank</th><th>Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num part"><span class="hn">' + esc(p.name) + '</span><span class="hm">/' + p.max + '</span></th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
+  $('thead').innerHTML = '<th class="num">Rank</th><th class="nm">Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num part"><span class="hn">' + esc(p.name) + '</span><span class="hm">/' + p.max + '</span></th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
   const cls = $('cls').value, q = $('find').value.trim().toLowerCase(), showRe = $('retakes').checked;
   let list = tagAttempts(DATA.results).filter(r => !cls || r.klass === cls);
   const official = list.filter(r => r.attempt === 1).sort(cmp);
@@ -121,10 +137,15 @@ function render() {
   const avg = official.length ? (official.reduce((s, r) => s + r.score, 0) / official.length).toFixed(1) : '0';
   const ties = official.filter((r, i) => official.some((o, j) => j !== i && o.score === r.score)).length;
   $('stats').innerHTML = '<div>Pupils<b>' + official.length + '</b></div><div>Average<b>' + avg + ' / ' + DATA.total + '</b></div><div>Highest<b>' + (official[0] ? official[0].score : '–') + '</b></div><div>Sharing a total<b>' + ties + '</b></div>';
-  $('rows').innerHTML = rows.length ? rows.map((r, i) => '<tr data-i="' + i + '"><td class="num rank">' + (r.attempt === 1 ? r.rank : '') + '</td><td>' + esc(r.name) +
-    (r.attempt > 1 ? '<span class="tag retake">retake ' + r.attempt + '</span>' : '') + (r.verified === false ? '<span class="tag">name not on list</span>' : '') + '</td><td>' + esc(r.klass) +
-    '</td><td class="num"><b>' + r.score + '</b></td>' + DATA.parts.map(p => '<td class="num">' + (r.parts[p.id] ?? 0) + '</td>').join('') +
-    '<td class="num">' + mmss(r.seconds) + '</td><td>' + when(r.submittedAt) + '</td></tr>').join('')
+  const tagsOf = r => (r.attempt > 1 || r.verified === false) ? '<div class="tags">' + (r.attempt > 1 ? '<span class="tag retake">retake ' + r.attempt + '</span>' : '') + (r.verified === false ? '<span class="tag">name not on list</span>' : '') + '</div>' : '';
+  $('rows').innerHTML = rows.length ? rows.map((r, i) => '<tr data-i="' + i + '">' +
+    '<td class="num rank" data-l="Rank">' + (r.attempt === 1 ? r.rank : '') + '</td>' +
+    '<td class="nm" data-l="Name"><span class="who">' + esc(r.name) + '</span>' + tagsOf(r) + '</td>' +
+    '<td data-l="Class">' + esc(r.klass) + '</td>' +
+    '<td class="num" data-l="Total"><b>' + r.score + '</b></td>' +
+    DATA.parts.map(p => '<td class="num" data-l="' + esc(p.name) + ' /' + p.max + '">' + (r.parts[p.id] ?? 0) + '</td>').join('') +
+    '<td class="num" data-l="Time">' + mmss(r.seconds) + '</td>' +
+    '<td class="when" data-l="Submitted">' + when(r.submittedAt) + '</td></tr>').join('')
     : '<tr><td colspan="' + (5 + DATA.parts.length) + '" class="muted" style="padding:20px">No answers yet. Results appear here as soon as pupils submit.</td></tr>';
   $('rows').querySelectorAll('tr[data-i]').forEach(tr => tr.onclick = () => detail(SHOWN[+tr.dataset.i]));
   $('note').textContent = 'Only each pupil\u2019s first attempt is ranked. Tap a row to see the answers' + (isAdmin() ? ', or delete an attempt (this also lets that pupil try again).' : '.');
