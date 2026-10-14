@@ -41,6 +41,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   Deleting an attempt also lets that pupil take the test again. The PIN is checked against the
   spelling app (`/api/admin`, action "load", which says whether the PIN is admin or teacher); a `QUIZ_PIN` env var counts as admin.
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
+  The same order is used for the Challenge level (Grammar is not a tie-breaker). Result column headers are two lines
+  (part name, then /max) so the table fits one screen; long names scroll sideways inside the table box.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 
 ## Practice test: mock-easy-3 (easy level, 19 questions, 35 marks)

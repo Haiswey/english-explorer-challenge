@@ -14,8 +14,11 @@ h1 { font-size: 34px; color: var(--sea); }
 .bar select, .bar input { font: inherit; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
 .bar .btn { font-size: 17px; min-height: 44px; padding: 6px 18px; }
 .scroll { overflow-x: auto; background: var(--card); border: 2px solid var(--line); border-radius: 16px; }
-table { border-collapse: collapse; width: 100%; min-width: 720px; }
-th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { padding: 8px 9px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th.part { white-space: normal; line-height: 1.15; vertical-align: bottom; }
+th.part .hn { display: block; }
+th.part .hm { display: block; font-weight: 600; }
 th { font-family: "Baloo 2", system-ui, sans-serif; font-size: 16px; color: var(--muted); font-weight: 700; position: sticky; top: 0; background: var(--card); }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tbody tr { cursor: pointer; }
@@ -107,7 +110,7 @@ const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0
 const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && a.seconds === b.seconds;
 let SHOWN = [];
 function render() {
-  $('thead').innerHTML = '<th class="num">Rank</th><th>Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num">' + esc(p.name) + ' /' + p.max + '</th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
+  $('thead').innerHTML = '<th class="num">Rank</th><th>Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num part"><span class="hn">' + esc(p.name) + '</span><span class="hm">/' + p.max + '</span></th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
   const cls = $('cls').value, q = $('find').value.trim().toLowerCase(), showRe = $('retakes').checked;
   let list = tagAttempts(DATA.results).filter(r => !cls || r.klass === cls);
   const official = list.filter(r => r.attempt === 1).sort(cmp);
