@@ -17,12 +17,12 @@ export const PRACTICE = {
       id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
       help: 'Look at the picture. Tap the correct word.',
       qs: [
-        { id: 'A1', pic: '1F6C1', alt: 'a bathtub', ans: 'bathroom', opts: ['bathroom', 'bedroom', 'kitchen'] },
-        { id: 'A2', pic: '1F9D1-200D-1F373', alt: 'a cook in a kitchen', ans: 'kitchen', opts: ['kitchen', 'dining room', 'cellar'] },
+        { id: 'A1', pic: '1F6C1', alt: 'a bathroom', ans: 'bathroom', opts: ['bathroom', 'bedroom', 'kitchen'] },
+        { id: 'A2', pic: '1F9D1-200D-1F373', alt: 'a kitchen', ans: 'kitchen', opts: ['kitchen', 'dining room', 'cellar'] },
         { id: 'A3', pic: '1F9E6', alt: 'socks', ans: 'socks', opts: ['socks', 'shoes', 'shorts'] },
         { id: 'A4', pic: '1F9E2', alt: 'a cap', ans: 'cap', opts: ['cap', 'skirt', 'sweater'] },
         { id: 'A5', pic: '270B', alt: 'a hand', ans: 'hand', opts: ['hand', 'foot', 'knee'] },
-        { id: 'A6', pic: '1F463', alt: 'footprints', ans: 'foot', opts: ['foot', 'arm', 'head'] },
+        { id: 'A6', pic: '1F463', alt: 'a foot', ans: 'foot', opts: ['foot', 'arm', 'head'] },
         { id: 'A7', pic: '1F366', alt: 'an ice cream', ans: 'eat ice cream', opts: ['eat ice cream', 'read a book', 'take a photo'] },
         { id: 'A8', pic: '1F3A3', alt: 'a fishing rod and fish', ans: 'catch a fish', opts: ['catch a fish', 'paint a picture', 'listen to music'] }
       ]
@@ -46,7 +46,7 @@ export const PRACTICE = {
         { id: 'D1', pic: '26BD', alt: 'a football', ans: ['I', 'play', 'football', 'on', 'Saturdays', '.'] },
         { id: 'D2', pic: '1F47E', alt: 'a monster', ans: ['There', 'is', 'a', 'monster', 'in', 'the', 'cellar', '.'] },
         { id: 'D3', pic: '1F455', alt: 'a red shirt', ans: ['I', 'am', 'wearing', 'a', 'red', 'shirt', '.'] },
-        { id: 'D4', pic: '1F9A9', alt: 'a flamingo standing on one leg', ans: ['I', 'can', 'stand', 'on', 'one', 'leg', '.'] },
+        { id: 'D4', pic: '1F9A9', alt: 'a child standing on one leg', ans: ['I', 'can', 'stand', 'on', 'one', 'leg', '.'] },
         { id: 'D5', pic: '1F3B8', alt: 'a guitar', ans: ["Let's", 'play', 'the', 'guitar', '.'] }
       ]
     }
