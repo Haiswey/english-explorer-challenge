@@ -98,9 +98,25 @@ function readyScreen() {
     '<section class="panel" style="margin-top:14px"><p style="margin:0 0 10px">There are <b>' + n + ' questions</b> in ' + QZ.parts.length + ' parts:</p>' +
     QZ.parts.map((p, k) => '<p style="margin:6px 0">Part ' + (k + 1) + ': ' + esc(p.name) + ' <span class="muted">(' + p.qs.length + ' questions)</span></p>').join('') +
     '<p class="muted" style="margin:12px 0 0;font-size:18px">You can go back and change your answers before you submit.</p>' +
+    '<div id="chalbox"></div>' +
     '<div class="actions"><button class="btn ghost" id="notme">This is not me</button><button class="btn go" id="start">Start</button></div></section>';
   document.getElementById('notme').onclick = homeScreen;
   document.getElementById('start').onclick = () => { S.i = 0; S.startedAt = S.startedAt || Date.now(); save(); qScreen(); };
+  offerChallenge();
+}
+
+// A pupil who has EVER scored every mark in the practice test can enter the challenge, on any device and after a retake.
+// The server holds the results, so ask it (the challenge questions only come back for an eligible pupil).
+async function offerChallenge() {
+  if (!S || QZ.level !== 'practice') return;
+  const me = S, box = document.getElementById('chalbox');
+  if (!box || box.querySelector('#chal')) return;
+  try {
+    const r = await fetch('/api/quiz?level=challenge&klass=' + encodeURIComponent(me.klass) + '&name=' + encodeURIComponent(me.name), { cache: 'no-store' });
+    if (!r.ok || S !== me || !document.getElementById('chalbox') || document.querySelector('#chal')) return;
+    document.getElementById('chalbox').innerHTML = '<div class="unlock"><h2 class="head" style="font-size:26px;margin:0 0 6px">Challenge level is open for you!</h2><p style="margin:0 0 12px">You got every answer right in the practice test. Do you want harder questions?</p><p class="err" id="cerr"></p><button class="btn go" id="chal">Start the challenge</button></div>';
+    document.getElementById('chal').onclick = startChallenge;
+  } catch (e) {}
 }
 
 function qObj(id) { for (const p of QZ.parts) { const q = p.qs.find(x => x.id === id); if (q) return { q, p, pn: QZ.parts.indexOf(p) + 1 }; } }
@@ -216,10 +232,11 @@ function doneScreen() {
     '<div class="parts">' + QZ.parts.map((p, k) => '<span>Part ' + (k + 1) + ': ' + (r.parts[p.id] || 0) + ' / ' + p.qs.length * p.marksEach + '</span>').join('') + '</div>' +
     '<p class="muted" style="margin:18px 0 0;font-size:18px">Your answers have been sent to your teacher.</p>' +
     (perfect ? '<div class="unlock"><h2 class="head" style="font-size:26px;margin:0 0 6px">You unlocked the Challenge level!</h2><p style="margin:0 0 12px">Every answer was right. Are you ready for harder questions?</p><p class="err" id="cerr"></p><button class="btn go" id="chal">Start the challenge</button></div>' : '') +
+    (perfect ? '' : '<div id="chalbox"></div>') +
     '<div class="actions" style="justify-content:center"><button class="btn ghost" id="another">Next pupil on this device</button></div></section>';
   document.getElementById('another').onclick = homeScreen;
   const c = document.getElementById('chal');
-  if (c) c.onclick = startChallenge;
+  if (c) c.onclick = startChallenge; else offerChallenge();
 }
 
 async function startChallenge() {
