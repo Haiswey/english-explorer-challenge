@@ -26,7 +26,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Ranking (teacher page): total, then sentence building (D), then spelling (B), then shorter time.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 
-## Current test: mock-easy-3 (easy level, 19 questions, 35 marks)
+## Practice test: mock-easy-3 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
 - B Spelling: picture, TYPE the 2 missing letters (no letter choices shown), 6 x 2 marks (1 per letter)
 - D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place). Tiles are lower case; the page capitalises the first word, "I" and days when placed, so a capital never shows the first word
@@ -40,6 +40,17 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - If any sound is ever added: edge-tts MP3s embedded as base64 (voices en-SG-LunaNeural, en-GB-SoniaNeural or
   en-US-AnaNeural, rate -10%). Never use speechSynthesis.
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
+
+## Challenge level: challenge-1 (39 marks, unlocked by full marks in the practice test)
+- Pupils who score 35/35 in the practice test see "You unlocked the Challenge level!" on the result screen.
+  The server enforces this: `/api/quiz?level=challenge` and `/api/submit` (level "challenge") check the pupil's
+  practice result in Blob (`hasFullMarks` in `api/_lib.js`). A pupil who got full marks on another device must
+  retake the practice test on this device to see the button.
+- A Vocabulary 6 x 1; B Spelling: type the WHOLE word, 6 x 2 (1 mark if exactly one letter is wrong);
+  C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 words, 5 x 3.
+- Both quizzes live in `api/_quiz.js` (PRACTICE, CHALLENGE). Every new picture code must be added to `PICS`
+  in `public/index.html`. The teacher page has a Test selector (Practice / Challenge level).
+- The practice screen shows "Let's practice!" (no "Mock test" wording for pupils).
 
 ## Planned tests
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.

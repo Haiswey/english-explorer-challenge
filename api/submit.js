@@ -1,5 +1,5 @@
-import { readBody, saveResult, rosterSearch, year2Classes } from './_lib.js';
-import { QUIZ, mark } from './_quiz.js';
+import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks } from './_lib.js';
+import { PRACTICE, getQuiz, mark } from './_quiz.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
@@ -9,6 +9,11 @@ export default async function handler(req, res) {
     const klass = String(body.klass || '').trim().toUpperCase().slice(0, 4);
     if (!name || !klass) return res.status(400).json({ error: 'Choose your class and name first.' });
 
+    const QUIZ = getQuiz(body.level);
+    if (QUIZ.level === 'challenge' && !(await hasFullMarks(PRACTICE, klass, name))) {
+      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice test.' });
+    }
+
     let verified = null;
     try {
       const classes = await year2Classes();
@@ -16,7 +21,7 @@ export default async function handler(req, res) {
       verified = names.includes(name);
     } catch { verified = null; } // name list unreachable: keep the answers, mark as unchecked
 
-    const m = mark(body.answers);
+    const m = mark(QUIZ, body.answers);
     const now = Date.now();
     const startedAt = Math.min(now, Number(body.startedAt) || now);
     const rec = {

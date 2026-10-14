@@ -140,3 +140,6 @@ img { max-width: 100%; }
 .slot.type { text-align: center; font-family: inherit; color: var(--ink); padding: 0; box-sizing: border-box; caret-color: transparent; }
 .slot.type:not(:placeholder-shown) { border-style: solid; background: var(--sea-soft); }
 .slot.type:focus { border-style: solid; outline: 3px solid var(--sun); outline-offset: 1px; }
+.gapline { font-size: clamp(22px, 6vw, 28px); font-weight: 700; text-align: center; margin: 0 0 16px; line-height: 1.5; }
+.gapline .blank { display: inline-block; min-width: 90px; border-bottom: 4px solid var(--sea); color: var(--sea); padding: 0 6px; }
+.unlock { margin-top: 20px; padding: 16px; border-radius: 16px; background: var(--sea-soft); border: 3px solid var(--sea); }
