@@ -20,6 +20,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   whenever the questions change, so new results are stored separately from old ones.
 - Pupil names and Year 2 classes come live from the spelling app (https://kk2spelling.vercel.app/api/roster,
   needs a class and at least 3 typed letters). Never copy the full name list into this project.
+- The name screen has a "My name is not here" button: the pupil types their full name (for example a new transfer pupil).
+  `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.
 - `api/results.js` (POST): teacher PIN check, then list or delete results. The PIN is checked against the
   spelling app's teacher PIN (`/api/admin`, action "load"); a `QUIZ_PIN` env var also works.
