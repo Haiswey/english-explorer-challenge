@@ -2,16 +2,18 @@
 // (vocabulary and grammar from the Teacher's Book map of the course).
 // Answers stay on the server; /api/quiz sends the questions without them.
 //
-// Two levels:
-//   practice  ("Let's practice!")  35 marks. A pupil who scores every mark unlocks the challenge.
-//   challenge ("Challenge level")  39 marks. Harder words, whole-word spelling, grammar, longer sentences.
-// Part kinds: choose (tap a word), letters (type letters into the gaps), gap (tap the word that fits the
-// sentence), build (tap word tiles in order).
+// Tests (each pupil does each test once):
+//   practice1  "Practice set 1"   35 marks. (the first test; keeps its old results id)
+//   practice2  "Practice set 2"   37 marks. Spelling = type the WHOLE word on plain lines, no letter hints.
+//   challenge  "Challenge level"  39 marks. Opens for pupils who scored every mark in a practice set.
+//   real       "Real quiz"        not written yet: it only has an open/close switch for now.
+// Part kinds: choose (tap a word), letters (type letters into the gaps), word (type the whole word on lines),
+// gap (tap the word that fits the sentence), build (tap word tiles in order).
 
 export const PRACTICE = {
-  id: 'mock-easy-3', level: 'practice',
+  id: 'mock-easy-3', key: 'practice1', level: 'practice',
   title: 'English Explorer Challenge',
-  subtitle: "Let's practice!",
+  subtitle: 'Practice set 1',
   parts: [
     {
       id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
@@ -53,8 +55,57 @@ export const PRACTICE = {
   ]
 };
 
+export const PRACTICE2 = {
+  id: 'practice-set-2', key: 'practice2', level: 'practice',
+  title: 'English Explorer Challenge',
+  subtitle: 'Practice set 2',
+  parts: [
+    {
+      id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
+      help: 'Look at the picture. Tap the correct word.',
+      qs: [
+        { id: 'A1', pic: '1F47B', alt: 'a ghost', ans: 'ghost', opts: ['ghost', 'monster', 'robot'] },
+        { id: 'A2', pic: '1F980', alt: 'a crab', ans: 'crab', opts: ['crab', 'shell', 'fish'] },
+        { id: 'A3', pic: '26F5', alt: 'a boat on the sea', ans: 'boat', opts: ['boat', 'bucket', 'kite'] },
+        { id: 'A4', pic: '2600', alt: 'the sun', ans: 'sun', opts: ['sun', 'sea', 'sand'] },
+        { id: 'A5', pic: '1F6B2', alt: 'a bicycle', ans: 'ride a bike', opts: ['ride a bike', 'play chess', 'take a photo'] },
+        { id: 'A6', pic: '1F457', alt: 'a dress', ans: 'dress', opts: ['dress', 'skirt', 'shorts'] },
+        { id: 'A7', pic: '1F916', alt: 'a robot', ans: 'robot', opts: ['robot', 'ghost', 'monster'] },
+        { id: 'A8', pic: '1F3D6', alt: 'a beach with an umbrella', ans: 'beach', opts: ['beach', 'garden', 'kitchen'] }
+      ]
+    },
+    {
+      // The whole word is typed on plain lines: no boxes, no letters shown, no hint about the length.
+      // Full marks for the exact word, 1 mark when exactly one letter is wrong, missing or extra.
+      // B7 (camera) is the one extra word from outside the Units 5-9 word list.
+      id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
+      help: 'Look at the picture. Type the word on the lines.',
+      qs: [
+        { id: 'B1', pic: '1F9E6', alt: 'socks', word: 'socks' },
+        { id: 'B2', pic: '1F9E2', alt: 'a cap', word: 'cap' },
+        { id: 'B3', pic: '270B', alt: 'a hand', word: 'hand' },
+        { id: 'B4', pic: '1F463', alt: 'a foot', word: 'foot' },
+        { id: 'B5', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
+        { id: 'B6', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
+        { id: 'B7', pic: '1F4F7', alt: 'a camera', word: 'camera' }
+      ]
+    },
+    {
+      id: 'D', kind: 'build', name: 'Sentence building', marksEach: 3,
+      help: 'Tap the words in the correct order to make a sentence.',
+      qs: [
+        { id: 'D1', pic: '1F366', alt: 'an ice cream', ans: ['I', 'like', 'ice', 'cream', '.'] },
+        { id: 'D2', pic: '1F45F', alt: 'red shoes', ans: ['I', 'am', 'wearing', 'red', 'shoes', '.'] },
+        { id: 'D3', pic: '1F6CF', alt: 'a bed with a blue blanket', ans: ['My', 'bed', 'is', 'blue', '.'] },
+        { id: 'D4', pic: '1F4D6', alt: 'a book', ans: ['I', 'like', 'to', 'read', 'books', '.'] },
+        { id: 'D5', pic: '1F3A3', alt: 'a fishing rod and fish', ans: ['I', 'can', 'catch', 'a', 'fish', '.'] }
+      ]
+    }
+  ]
+};
+
 export const CHALLENGE = {
-  id: 'challenge-1', level: 'challenge',
+  id: 'challenge-1', key: 'challenge', level: 'challenge',
   title: 'English Explorer Challenge',
   subtitle: 'Challenge level',
   parts: [
@@ -109,8 +160,17 @@ export const CHALLENGE = {
   ]
 };
 
-export const QUIZZES = { practice: PRACTICE, challenge: CHALLENGE };
-export const getQuiz = level => (level === 'challenge' ? CHALLENGE : PRACTICE);
+export const PRACTICES = [PRACTICE, PRACTICE2]; // a pupil who scores every mark in ANY of these unlocks the challenge
+export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE };
+// The tests the teacher can open or close for pupils, in the order shown. `real` has no questions yet.
+export const SETS = [
+  { key: 'practice1', label: 'Practice set 1', ready: true, openByDefault: true },
+  { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
+  { key: 'challenge', label: 'Challenge level', ready: true, openByDefault: true },
+  { key: 'real', label: 'Real quiz', ready: false, openByDefault: false }
+];
+// 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
+export const getQuiz = key => QUIZZES[key === 'practice' ? 'practice1' : key] || PRACTICE;
 export const totalOf = quiz => quiz.parts.reduce((s, p) => s + p.qs.length * p.marksEach, 0);
 
 // Words that always keep a capital letter (I, days of the week). The first word is capitalised too.
@@ -121,14 +181,25 @@ const showWords = (words, caps) => words.map((w, i) => {
   return i === 0 || caps.some(c => c.toLowerCase() === lw) ? capFirst(lw) : lw;
 });
 
+// true when the two words differ by exactly one letter (one wrong, one missing or one extra)
+function withinOne(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1);
+  return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
+}
+
 export function publicQuiz(quiz = PRACTICE) {
   return {
-    id: quiz.id, level: quiz.level, title: quiz.title, subtitle: quiz.subtitle, total: totalOf(quiz),
+    id: quiz.id, key: quiz.key, level: quiz.level, title: quiz.title, subtitle: quiz.subtitle, total: totalOf(quiz),
     parts: quiz.parts.map(p => ({
       id: p.id, kind: p.kind, name: p.name, marksEach: p.marksEach, help: p.help,
       qs: p.qs.map(q => {
         if (p.kind === 'choose') return { id: q.id, pic: q.pic, alt: q.alt, opts: q.opts };
         if (p.kind === 'gap') return { id: q.id, pic: q.pic, alt: q.alt, text: q.text, opts: q.opts };
+        if (p.kind === 'word') return { id: q.id, pic: q.pic, alt: q.alt };
         if (p.kind === 'letters') {
           const blanks = q.blanks || q.word.split('').map((_, i) => i);
           return { id: q.id, pic: q.pic, alt: q.alt, len: q.word.length, blanks,
@@ -153,6 +224,11 @@ export function mark(quiz, answers) {
         shown = typeof given === 'string' ? given.slice(0, 40) : '';
         correct = q.ans;
         got = shown === q.ans ? 1 : 0;
+      } else if (p.kind === 'word') {
+        shown = typeof given === 'string' ? given.replace(/\s+/g, ' ').trim().slice(0, 40) : '';
+        correct = q.word;
+        const typed = shown.toLowerCase().replace(/\s+/g, '');
+        got = typed === q.word ? p.marksEach : (typed && withinOne(typed, q.word) ? 1 : 0);
       } else if (p.kind === 'letters') {
         const blanks = q.blanks || q.word.split('').map((_, i) => i);
         const letters = Array.isArray(given) ? given.map(x => String(x || '').trim().slice(0, 1).toLowerCase()) : [];

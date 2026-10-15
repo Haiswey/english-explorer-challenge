@@ -47,7 +47,23 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   900 px wide or less show each pupil as a small card instead of a table row.
   Only each pupil's first attempt is ranked; retakes are shown separately.
 
-## Practice test: mock-easy-3 (easy level, 19 questions, 35 marks)
+## Tests and the open/close switches
+- Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
+  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`), `real` (switch only, no questions yet).
+  Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
+- Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed,
+  challenge open, real closed. Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
+  Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
+  Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
+  Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
+- Challenge unlock: full marks in ANY practice set (`hasFullMarks` loops `PRACTICES`).
+
+## Practice set 2: practice-set-2 (20 questions, 37 marks)
+- A Vocabulary 8 x 1 (ghost, crab, boat, sun, ride a bike, dress, robot, beach); B Spelling: picture and ruled lines only, type the WHOLE word,
+  7 x 2 (kind `word`; 1 mark if exactly one letter wrong): socks, cap, hand, foot, kitchen, jacket, camera (camera = the extra curriculum word, easy to change);
+  D Sentence building 5 x 3. Uses pictures already embedded in `PICS`.
+
+## Practice set 1: mock-easy-3 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
 - B Spelling: picture, TYPE the 2 missing letters (no letter choices shown), 6 x 2 marks (1 per letter)
 - D Sentence building: tap word tiles in order, 5 x 3 marks (partial marks by words in the right place). Tiles are lower case; the page capitalises the first word, "I" and days when placed, so a capital never shows the first word
@@ -78,5 +94,5 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Planned tests
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.
-2. Mock test 2, medium: add Section C Grammar; spelling becomes typing the whole word.
+2. Mock test 2, medium: add Section C Grammar (Practice set 2 already types the whole spelling word).
 3. Final competition: full 60-mark paper, Sections A-E, with a question bank so pupils get different versions.

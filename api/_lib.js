@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { put, list, del } from '@vercel/blob';
+import { PRACTICES, SETS } from './_quiz.js';
 
 // Names and classes come from the KK2 spelling app, so there is only one pupil list to keep up to date.
 export const SPELL = 'https://kk2spelling.vercel.app';
@@ -153,10 +154,39 @@ export async function deleteResult(testId, url) {
   if (rec && rec.klass && rec.name) await releaseAttempt({ id: testId }, rec.klass, rec.name);
 }
 
-// A pupil unlocks the challenge level by scoring every mark in the practice test.
-export async function hasFullMarks(practice, klass, name) {
+// A pupil unlocks the challenge level by scoring every mark in ANY practice set. (Cheap: one marker read per set.)
+export async function hasFullMarks(klass, name) {
   const k = String(klass || '').trim().toUpperCase(), n = normName(name);
   if (!k || !n) return false;
-  const a = await getAttempt(practice, k, n); // a cheap read of the pupil's marker, no list
-  return !!a && (a.full === true || a.score === a.total);
+  for (const quiz of PRACTICES) {
+    const a = await getAttempt(quiz, k, n);
+    if (a && (a.full === true || a.score === a.total)) return true;
+  }
+  return false;
+}
+
+// ---- Open / close: which tests pupils can start ------------------------------------------------------------------
+// ONE small file at a fixed address (a plain fetch to read, one put to change). Missing = the defaults in SETS.
+const OPEN_PATH = 'config/open.json';
+export async function getOpenState() {
+  const saved = (await readJson(OPEN_PATH)) || {};
+  const out = {};
+  for (const s of SETS) {
+    const v = saved[s.key];
+    out[s.key] = v && typeof v.open === 'boolean' ? { open: v.open, at: v.at || 0 } : { open: s.openByDefault, at: 0 };
+  }
+  return out;
+}
+export async function setOpen(key, open) {
+  if (!SETS.some(s => s.key === key)) throw new Error('Unknown test.');
+  const state = await getOpenState();
+  state[key] = { open: !!open, at: Date.now() };
+  await put(OPEN_PATH, JSON.stringify(state), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
+  return state;
+}
+// Closing stops NEW starts. A pupil who started before it closed may still hand in (for up to 2 hours).
+export function mayHandIn(state, key, startedAt) {
+  const s = state[key];
+  if (!s || s.open) return true;
+  return Number(startedAt) > 0 && Number(startedAt) < s.at && Date.now() - s.at < 2 * 3600 * 1000;
 }
