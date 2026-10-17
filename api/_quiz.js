@@ -99,8 +99,8 @@ export const PRACTICE2 = {
       help: 'Tap the words in the correct order to make a sentence.',
       qs: [
         { id: 'D1', pic: '1F6B2', alt: 'a bicycle', ans: ['I', 'can', 'ride', 'my', 'bike', '.'] },
-        { id: 'D2', pic: 'TIGER', alt: 'a tiger', ans: ['The', 'tiger', 'lives', 'in', 'the', 'jungle', '.'] },
-        { id: 'D3', pic: 'CAMEL', alt: 'a camel', ans: ['The', 'camel', 'lives', 'in', 'the', 'desert', '.'] },
+        { id: 'D2', pic: 'TIGER', alt: 'a tiger', ans: ['Tigers', 'live', 'in', 'the', 'jungle', '.'] },
+        { id: 'D3', pic: 'CAMEL', alt: 'a camel', ans: ['Camels', 'live', 'in', 'the', 'desert', '.'] },
         { id: 'D4', pic: '1F916', alt: 'a robot', ans: ['The', 'robot', 'has', 'two', 'arms', '.'] },
         { id: 'D5', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: ['I', 'can', 'make', 'a', 'sandcastle', '.'] }
       ]
@@ -204,7 +204,7 @@ export const CHALLENGE2 = {
         { id: 'C3', pic: '26BD', alt: 'a football', text: 'He likes ___ football.', ans: 'playing', opts: ['playing', 'plays', 'play'] },
         { id: 'C4', pic: '1F41A', alt: 'shells', text: 'The shells ___ on the sand.', ans: 'are', opts: ['are', 'is', 'am'] },
         { id: 'C5', pic: '1F4F7', alt: 'a camera', text: "Let's ___ a photo.", ans: 'take', opts: ['take', 'takes', 'taking'] },
-        { id: 'C6', pic: 'TIGER', alt: 'a tiger', text: 'The tiger ___ in the jungle.', ans: 'lives', opts: ['lives', 'live', 'living'] }
+        { id: 'C6', pic: 'TIGER', alt: 'a tiger', text: 'Tigers ___ in the jungle.', ans: 'live', opts: ['live', 'lives', 'living'] }
       ]
     },
     {
@@ -215,7 +215,7 @@ export const CHALLENGE2 = {
         { id: 'D2', pic: '26BD', alt: 'a football', ans: ['My', 'brother', 'likes', 'to', 'play', 'football', '.'] },
         { id: 'D3', pic: '1F47E', alt: 'a monster', ans: ['There', 'is', 'a', 'monster', 'in', 'the', 'cellar', '.'] },
         { id: 'D4', pic: '1F456', alt: 'jeans', ans: ['I', 'am', 'wearing', 'my', 'new', 'jeans', '.'] },
-        { id: 'D5', pic: 'PARROT', alt: 'a parrot', ans: ['The', 'parrot', 'lives', 'in', 'the', 'jungle', '.'] }
+        { id: 'D5', pic: 'PARROT', alt: 'a parrot', ans: ['Parrots', 'live', 'in', 'the', 'green', 'jungle', '.'] }
       ]
     }
   ]

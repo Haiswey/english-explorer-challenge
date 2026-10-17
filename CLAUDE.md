@@ -64,7 +64,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   A Vocabulary 8 x 1 (take a photo, make a sandcastle, T-shirt, desert, jungle, ocean, penguin, robot);
   B Spelling: picture and ruled lines only, type the WHOLE word, 7 x 2 (kind `word`; 1 mark if same length with exactly one wrong letter; a missing or extra letter = 0):
   jacket, guitar, camel, snake, parrot, shark, shoulder* (* = the one extra word, beyond the list but inside the Unit 8 body theme; easy to change);
-  D Sentence building 5 x 3 (bike; tiger lives in the jungle; camel lives in the desert; robot has two arms; sandcastle).
+  D Sentence building 5 x 3 (bike; "Tigers live in the jungle"; "Camels live in the desert" (habitat sentences use the plural, as in Miss Irene's list style); robot has two arms; sandcastle).
   Habitat and animal pictures (DESERT, JUNGLE, OCEAN, MOUNTAINS, PENGUIN, CAMEL, TIGER, SNAKE, SHARK, POLARBEAR, PARROT, JELLYFISH, LIZARD) and SHOULDER are in `PICS`.
 - Practice set 1 and Challenge for set 1 do NOT have habitat questions yet (they are live with results; changing their questions needs a new id).
 
@@ -94,7 +94,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Same shape in both: A Vocabulary 6 x 1; B Spelling: type the WHOLE word in letter boxes, 6 x 2 (1 mark if exactly one letter is wrong);
   C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 tiles, 5 x 3.
 - Challenge 2 (all words from the school spelling list): vocabulary polar bear, mountains, jellyfish, look for shells, play the guitar, kitchen; spelling jeans, kitchen, shells (the picture shows TWO shells, so the answer is plural), bedroom, football, lizard;
-  grammar about monster/cellar, jeans, football, shells, camera, tiger/jungle; sentences about sandcastle, football, monster, jeans, parrot (lives in the jungle).
+  grammar about monster/cellar, jeans, football, shells, camera, "Tigers ___ in the jungle"; sentences about sandcastle, football, monster, jeans, "Parrots live in the green jungle".
 - Quizzes live in `api/_quiz.js` (PRACTICE, PRACTICE2, CHALLENGE, CHALLENGE2). Every new picture code must be added to `PICS`
   in `public/index.html`. The teacher page has a Test selector listing every test with questions.
 - The practice screen shows the set name (no "Mock test" wording for pupils).
