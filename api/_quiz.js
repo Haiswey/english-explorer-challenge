@@ -67,7 +67,7 @@ export const PRACTICE2 = {
         { id: 'A1', pic: '1F47B', alt: 'a ghost', ans: 'ghost', opts: ['ghost', 'monster', 'robot'] },
         { id: 'A2', pic: '1F980', alt: 'a crab', ans: 'crab', opts: ['crab', 'shell', 'fish'] },
         { id: 'A3', pic: '26F5', alt: 'a boat on the sea', ans: 'boat', opts: ['boat', 'bucket', 'kite'] },
-        { id: 'A4', pic: '2600', alt: 'the sun', ans: 'sun', opts: ['sun', 'sea', 'sand'] },
+        { id: 'A4', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: 'sandcastle', opts: ['sandcastle', 'sea', 'sand'] },
         { id: 'A5', pic: '1F6B2', alt: 'a bicycle', ans: 'ride a bike', opts: ['ride a bike', 'play chess', 'take a photo'] },
         { id: 'A6', pic: '1F457', alt: 'a dress', ans: 'dress', opts: ['dress', 'skirt', 'shorts'] },
         { id: 'A7', pic: '1F916', alt: 'a robot', ans: 'robot', opts: ['robot', 'ghost', 'monster'] },
@@ -76,18 +76,18 @@ export const PRACTICE2 = {
     },
     {
       // The whole word is typed on plain lines: no boxes, no letters shown, no hint about the length.
-      // Full marks for the exact word, 1 mark when exactly one letter is wrong, missing or extra.
-      // B7 (camera) is the one extra word from outside the Units 5-9 word list.
+      // Full marks for the exact word, 1 mark when the word has the right length and exactly one letter is wrong; a missing or extra letter gets 0.
+      // B6 shoulder and B7 scarf (and A4 sandcastle) are extra words: same themes as Units 5-9, a little beyond the book list.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
       help: 'Look at the picture. Type the word on the lines.',
       qs: [
         { id: 'B1', pic: '1F9E6', alt: 'socks', word: 'socks' },
         { id: 'B2', pic: '1F9E2', alt: 'a cap', word: 'cap' },
         { id: 'B3', pic: '270B', alt: 'a hand', word: 'hand' },
-        { id: 'B4', pic: '1F463', alt: 'a foot', word: 'foot' },
-        { id: 'B5', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
-        { id: 'B6', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
-        { id: 'B7', pic: '1F4F7', alt: 'a camera', word: 'camera' }
+        { id: 'B4', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
+        { id: 'B5', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
+        { id: 'B6', pic: 'SHOULDER', alt: 'a child touching a shoulder', word: 'shoulder' },
+        { id: 'B7', pic: '1F9E3', alt: 'a scarf', word: 'scarf' }
       ]
     },
     {
@@ -181,14 +181,13 @@ const showWords = (words, caps) => words.map((w, i) => {
   return i === 0 || caps.some(c => c.toLowerCase() === lw) ? capFirst(lw) : lw;
 });
 
-// true when the two words differ by exactly one letter (one wrong, one missing or one extra)
-function withinOne(a, b) {
-  if (a === b) return true;
-  if (Math.abs(a.length - b.length) > 1) return false;
-  let i = 0;
-  while (i < a.length && i < b.length && a[i] === b[i]) i++;
-  if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1);
-  return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
+// true when the two words have the same length and differ in exactly one letter.
+// A missing or an extra letter does NOT count (it gets 0 marks).
+function oneLetterWrong(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diff++;
+  return diff === 1;
 }
 
 export function publicQuiz(quiz = PRACTICE) {
@@ -228,7 +227,7 @@ export function mark(quiz, answers) {
         shown = typeof given === 'string' ? given.replace(/\s+/g, ' ').trim().slice(0, 40) : '';
         correct = q.word;
         const typed = shown.toLowerCase().replace(/\s+/g, '');
-        got = typed === q.word ? p.marksEach : (typed && withinOne(typed, q.word) ? 1 : 0);
+        got = typed === q.word ? p.marksEach : (oneLetterWrong(typed, q.word) ? 1 : 0);
       } else if (p.kind === 'letters') {
         const blanks = q.blanks || q.word.split('').map((_, i) => i);
         const letters = Array.isArray(given) ? given.map(x => String(x || '').trim().slice(0, 1).toLowerCase()) : [];

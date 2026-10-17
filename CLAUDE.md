@@ -59,9 +59,9 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Challenge unlock: full marks in ANY practice set (`hasFullMarks` loops `PRACTICES`).
 
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
-- A Vocabulary 8 x 1 (ghost, crab, boat, sun, ride a bike, dress, robot, beach); B Spelling: picture and ruled lines only, type the WHOLE word,
-  7 x 2 (kind `word`; 1 mark if exactly one letter wrong): socks, cap, hand, foot, kitchen, jacket, camera (camera = the extra curriculum word, easy to change);
-  D Sentence building 5 x 3. Uses pictures already embedded in `PICS`.
+- A Vocabulary 8 x 1 (ghost, crab, boat, sandcastle*, ride a bike, dress, robot, beach); B Spelling: picture and ruled lines only, type the WHOLE word,
+  7 x 2 (kind `word`; 1 mark if same length with exactly one wrong letter; a missing or extra letter = 0): socks, cap, hand, kitchen, jacket, shoulder*, scarf* (* = extra words just beyond the book list but inside the unit themes: body parts, clothes, beach; easy to change);
+  D Sentence building 5 x 3. Extra-word pictures (shoulder, scarf, sandcastle) are in `PICS` (codes SHOULDER, 1F9E3, 1F3F0).
 
 ## Practice set 1: mock-easy-3 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
