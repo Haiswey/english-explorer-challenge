@@ -60,10 +60,13 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   (`after` on the challenge quiz names its practice set; `next` on the practice set names its challenge; `hasFullMarks(klass, name, practiceKey)`).
 
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
-- Different words and sentences from Practice set 1, covering all five units. A Vocabulary 8 x 1 (ghost, dress, robot, ride a bike, take a photo, sandcastle*, beach, sun);
+- Words come from the school's "Year 2 Spelling List 2026" (Miss Irene's docx; Topics 5-9 plus habitats and animals). Different words and sentences from Practice set 1.
+  A Vocabulary 8 x 1 (take a photo, make a sandcastle, T-shirt, desert, jungle, ocean, penguin, robot);
   B Spelling: picture and ruled lines only, type the WHOLE word, 7 x 2 (kind `word`; 1 mark if same length with exactly one wrong letter; a missing or extra letter = 0):
-  jacket, crab, boat, guitar, monster, shoulder*, scarf* (* = extra words just beyond the book list but inside the unit themes; easy to change);
-  D Sentence building 5 x 3 (bike, ghost, dress, robot, sandcastle). Extra-word pictures (shoulder, scarf, sandcastle) are in `PICS` (codes SHOULDER, 1F9E3, 1F3F0).
+  jacket, guitar, camel, snake, parrot, shark, shoulder* (* = the one extra word, beyond the list but inside the Unit 8 body theme; easy to change);
+  D Sentence building 5 x 3 (bike; tiger lives in the jungle; camel lives in the desert; robot has two arms; sandcastle).
+  Habitat and animal pictures (DESERT, JUNGLE, OCEAN, MOUNTAINS, PENGUIN, CAMEL, TIGER, SNAKE, SHARK, POLARBEAR, PARROT, JELLYFISH, LIZARD) and SHOULDER are in `PICS`.
+- Practice set 1 and Challenge for set 1 do NOT have habitat questions yet (they are live with results; changing their questions needs a new id).
 
 ## Practice set 1: mock-easy-3 (easy level, 19 questions, 35 marks)
 - A Vocabulary: picture, choose the word, 8 x 1 mark
@@ -74,8 +77,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Rules from Miss Irene
 - Images for teaching tools must be EMBEDDED in the files (inline SVG or base64 data URIs), never linked from
-  external URLs. Done: the 29 quiz pictures (children's picture-book style, made with Canva AI, credited on the home screen) are
-  embedded as base64 WebP (480x480) in the `PICS` map in `public/index.html` (page is about 590 KB). A new picture
+  external URLs. Done: the 44 quiz pictures (children's picture-book style, made with Canva AI, credited on the home screen) are
+  embedded as base64 WebP (480x480) in the `PICS` map in `public/index.html` (page is about 950 KB). A new picture
   code in `api/_quiz.js` must be added to `PICS` (otherwise the plain emoji shows instead). To make a new one: Canva
   `generate-image` with one style line, then place it on a page of a Canva design and `export-design` as PNG.
   Fonts (Andika, Baloo 2; SIL OFL) are subset woff2 files in `public/fonts/`, loaded from `style.css`. Nothing is loaded from outside sites.
@@ -90,7 +93,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   `/api/submit` checks the same, so typing the address does not skip the practice set.
 - Same shape in both: A Vocabulary 6 x 1; B Spelling: type the WHOLE word in letter boxes, 6 x 2 (1 mark if exactly one letter is wrong);
   C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 tiles, 5 x 3.
-- Challenge 2 words: bathroom, shells, play the guitar, monster, jeans, scarf; spelling jeans, kitchen, shells (the picture shows TWO shells, so the answer is plural), bedroom, football, shoulder; sentences about sandcastle, football, monster, jeans, shoulder.
+- Challenge 2 (all words from the school spelling list): vocabulary polar bear, mountains, jellyfish, look for shells, play the guitar, kitchen; spelling jeans, kitchen, shells (the picture shows TWO shells, so the answer is plural), bedroom, football, lizard;
+  grammar about monster/cellar, jeans, football, shells, camera, tiger/jungle; sentences about sandcastle, football, monster, jeans, parrot (lives in the jungle).
 - Quizzes live in `api/_quiz.js` (PRACTICE, PRACTICE2, CHALLENGE, CHALLENGE2). Every new picture code must be added to `PICS`
   in `public/index.html`. The teacher page has a Test selector listing every test with questions.
 - The practice screen shows the set name (no "Mock test" wording for pupils).
