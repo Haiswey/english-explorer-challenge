@@ -1,5 +1,5 @@
-import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt } from './_lib.js';
-import { PRACTICE, getQuiz, mark } from './_quiz.js';
+import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt, getOpenState, mayHandIn } from './_lib.js';
+import { getQuiz, mark } from './_quiz.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
@@ -9,9 +9,13 @@ export default async function handler(req, res) {
     const klass = String(body.klass || '').trim().toUpperCase().slice(0, 4);
     if (!name || !klass) return res.status(400).json({ error: 'Choose your class and name first.' });
 
-    const QUIZ = getQuiz(body.level);
-    if (QUIZ.level === 'challenge' && !(await hasFullMarks(PRACTICE, klass, name))) {
-      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice test.' });
+    const QUIZ = getQuiz(body.set || body.level);
+    // A closed test takes no new pupils; one who started before it closed may still hand in.
+    if (!mayHandIn(await getOpenState(), QUIZ.key, body.startedAt)) {
+      return res.status(403).json({ error: 'This test is closed now. Please tell your teacher.', closed: true });
+    }
+    if (QUIZ.level === 'challenge' && !(await hasFullMarks(klass, name))) {
+      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in a practice set.' });
     }
 
     // One attempt only: a second submit (another device, a reload, a retake) gets the pupil's first result back.

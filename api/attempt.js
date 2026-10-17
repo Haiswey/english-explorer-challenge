@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const name = String(q.name || '').trim().slice(0, 80);
   if (!klass || !name) return res.status(200).json({ done: false });
   try {
-    const result = await getAttempt(getQuiz(q.level), klass, name);
+    const result = await getAttempt(getQuiz(q.set || q.level), klass, name);
     res.status(200).json(result ? { done: true, result: { score: result.score, total: result.total, parts: result.parts } } : { done: false });
   } catch { res.status(200).json({ done: false }); }
 }

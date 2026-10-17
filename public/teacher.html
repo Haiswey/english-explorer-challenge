@@ -27,6 +27,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tbody tr { cursor: pointer; }
 tbody tr:hover { background: var(--sky); }
 .rank { font-family: "Baloo 2", system-ui, sans-serif; font-weight: 800; font-size: 19px; color: var(--sea); }
+.openbox { margin: 14px 0; }
+.orow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 0; border-top: 1px solid var(--line); }
+.orow .oname { flex: 1 1 180px; font-weight: 700; }
+.chip { font-size: 14px; font-weight: 700; padding: 3px 12px; border-radius: 99px; }
+.chip.on { background: var(--sea-soft); color: var(--sea); }
+.chip.off { background: var(--coral-soft); color: var(--coral); }
+.orow .btn { min-height: 40px; font-size: 16px; padding: 4px 18px; }
 .tags { margin-top: 3px; }
 .tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-right: 6px; display: inline-block; }
 /* Narrow screens (phones, small tablets): each pupil is a small card, no sideways scrolling */
@@ -68,8 +75,11 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
     <button class="btn" id="go">Show results</button>
   </section>
   <section id="res" hidden>
+    <div class="panel openbox"><h2 class="head" style="font-size:22px;margin:0 0 4px">Open or close tests for pupils</h2>
+      <p class="muted" style="margin:0 0 10px;font-size:15px">Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.</p>
+      <div id="opens"></div></div>
     <div class="bar">
-      <label>Test <select id="lvl"><option value="practice">Practice</option><option value="challenge">Challenge level</option></select></label>
+      <label>Test <select id="lvl"><option value="practice1">Practice set 1</option></select></label>
       <label>Class <select id="cls"><option value="">All Year 2</option></select></label>
       <label><input type="checkbox" id="retakes"> Show retakes</label>
       <input id="find" placeholder="Find a name" aria-label="Find a name">
@@ -92,14 +102,14 @@ const when = t => new Date(t).toLocaleString('en-MY', { day: 'numeric', month: '
 const PARTNAME = { A: 'Vocabulary', B: 'Spelling', D: 'Sentence building' };
 
 async function fetchResults() {
-  const r = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, level: $('lvl').value }) });
+  const r = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, set: $('lvl').value }) });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || 'Could not load results.');
   return j;
 }
 async function login() {
   PIN = $('pin').value.trim() || PIN; $('perr').textContent = ''; $('go').disabled = true;
-  try { DATA = await fetchResults(); sessionStorage.setItem('kkx-pin', PIN); $('login').hidden = true; $('res').hidden = false; $('lock').hidden = false; fillClasses(); render(); }
+  try { DATA = await fetchResults(); sessionStorage.setItem('kkx-pin', PIN); $('login').hidden = true; $('res').hidden = false; $('lock').hidden = false; fillSets(); renderOpen(); fillClasses(); render(); }
   catch (e) { $('perr').textContent = e.message; sessionStorage.removeItem('kkx-pin'); }
   $('go').disabled = false;
 }
@@ -109,6 +119,31 @@ function lockPage() {
   PIN = ''; DATA = null; $('pin').value = ''; $('perr').textContent = '';
   if ($('dlg').open) $('dlg').close();
   $('res').hidden = true; $('lock').hidden = true; $('login').hidden = false; $('pin').focus();
+}
+// Which tests can pupils start? One row per test with an Open / Close button.
+function renderOpen() {
+  $('opens').innerHTML = DATA.sets.map(s => {
+    const o = DATA.open[s.key] && DATA.open[s.key].open;
+    return '<div class="orow"><span class="oname">' + esc(s.label) + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
+      '<span class="chip ' + (o ? 'on' : 'off') + '">' + (o ? 'Open' : 'Closed') + '</span>' +
+      '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button></div>';
+  }).join('');
+  $('opens').querySelectorAll('[data-open]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, action: 'setOpen', set: b.dataset.open, open: b.dataset.to === '1' }) });
+      const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not changed.');
+      DATA.open = j.open;
+    } catch (e) { alert(e.message); }
+    renderOpen();
+  });
+}
+// The Test box lists the tests that have questions; keep the pupil's choice when the list is rebuilt.
+function fillSets() {
+  const keep = $('lvl').value;
+  const list = DATA.sets.filter(s => s.hasQuiz);
+  $('lvl').innerHTML = list.map(s => '<option value="' + esc(s.key) + '">' + esc(s.label) + '</option>').join('');
+  $('lvl').value = list.some(s => s.key === keep) ? keep : DATA.key;
 }
 function fillClasses() {
   const keep = $('cls').value;
@@ -161,7 +196,7 @@ function detail(r) {
     if (!confirm('Delete ' + r.name + '\u2019s ' + (r.attempt > 1 ? 'retake ' + r.attempt : 'attempt') + ' (' + r.score + ' / ' + r.total + ')? This cannot be undone.')) return;
     $('del').disabled = true; $('derr').textContent = '';
     try {
-      const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, level: $('lvl').value, action: 'delete', url: r._url }) });
+      const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, set: $('lvl').value, action: 'delete', url: r._url }) });
       const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not deleted.');
       DATA.results = DATA.results.filter(o => o._url !== r._url); $('dlg').close(); fillClasses(); render();
     } catch (e) { $('derr').textContent = e.message; $('del').disabled = false; }
@@ -175,9 +210,9 @@ function csv() {
   a.download = 'english-explorer-' + $('lvl').value + '-' + ($('cls').value || 'year2') + '.csv'; a.click();
 }
 $('lock').onclick = lockPage; $('go').onclick = login; $('pin').onkeydown = e => { if (e.key === 'Enter') login(); };
-$('lvl').onchange = async () => { try { DATA = await fetchResults(); fillClasses(); render(); } catch (e) { alert(e.message); } };
+$('lvl').onchange = async () => { try { DATA = await fetchResults(); fillSets(); renderOpen(); fillClasses(); render(); } catch (e) { alert(e.message); } };
 $('cls').onchange = render; $('retakes').onchange = render; $('find').oninput = render; $('csv').onclick = csv;
-$('refresh').onclick = async () => { $('refresh').disabled = true; try { DATA = await fetchResults(); fillClasses(); render(); } catch (e) { alert(e.message); } $('refresh').disabled = false; };
+$('refresh').onclick = async () => { $('refresh').disabled = true; try { DATA = await fetchResults(); fillSets(); renderOpen(); fillClasses(); render(); } catch (e) { alert(e.message); } $('refresh').disabled = false; };
 if (PIN) login();
 })();
 </script>
