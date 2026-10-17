@@ -14,8 +14,8 @@ export default async function handler(req, res) {
     if (!mayHandIn(await getOpenState(), QUIZ.key, body.startedAt)) {
       return res.status(403).json({ error: 'This test is closed now. Please tell your teacher.', closed: true });
     }
-    if (QUIZ.level === 'challenge' && !(await hasFullMarks(klass, name))) {
-      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in a practice set.' });
+    if (QUIZ.after && !(await hasFullMarks(klass, name, QUIZ.after))) {
+      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice set.' });
     }
 
     // One attempt only: a second submit (another device, a reload, a retake) gets the pupil's first result back.
