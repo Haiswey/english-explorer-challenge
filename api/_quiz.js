@@ -36,9 +36,9 @@ export const PRACTICE = {
       qs: [
         { id: 'B1', pic: '1F6CF', alt: 'a bed', word: 'bedroom', blanks: [4, 5] },
         { id: 'B2', pic: '1F456', alt: 'jeans', word: 'jeans', blanks: [1, 4] },
-        { id: 'B3', pic: '1F45F', alt: 'a shoe', word: 'shoes', blanks: [2, 3] },
+        { id: 'B3', pic: '1F45F', alt: 'shoes', word: 'shoes', blanks: [2, 3] },
         { id: 'B4', pic: '1F464', alt: 'a head', word: 'head', blanks: [1, 2] },
-        { id: 'B5', pic: '1F41A', alt: 'a shell', word: 'shells', blanks: [2, 5] },
+        { id: 'B5', pic: '1F41A', alt: 'shells', word: 'shells', blanks: [2, 5] },
         { id: 'B6', pic: '1F4D6', alt: 'a book', word: 'book', blanks: [1, 2] }
       ]
     },
@@ -175,7 +175,7 @@ export const CHALLENGE2 = {
       help: 'Look at the picture. Tap the correct word.',
       qs: [
         { id: 'A1', pic: '1F6C1', alt: 'a bathroom', ans: 'bathroom', opts: ['bathroom', 'bedroom', 'kitchen'] },
-        { id: 'A2', pic: '1F41A', alt: 'a shell', ans: 'shell', opts: ['shell', 'sandcastle', 'crab'] },
+        { id: 'A2', pic: '1F41A', alt: 'shells', ans: 'shells', opts: ['shells', 'sandcastle', 'crab'] },
         { id: 'A3', pic: '1F3B8', alt: 'a guitar', ans: 'play the guitar', opts: ['play the guitar', 'play chess', 'paint a picture'] },
         { id: 'A4', pic: '1F47E', alt: 'a monster', ans: 'monster', opts: ['monster', 'ghost', 'robot'] },
         { id: 'A5', pic: '1F456', alt: 'jeans', ans: 'jeans', opts: ['jeans', 'shorts', 'socks'] },
@@ -189,7 +189,7 @@ export const CHALLENGE2 = {
       qs: [
         { id: 'B1', pic: '1F456', alt: 'jeans', word: 'jeans' },
         { id: 'B2', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
-        { id: 'B3', pic: '1F41A', alt: 'a shell', word: 'shell' },
+        { id: 'B3', pic: '1F41A', alt: 'shells', word: 'shells' },
         { id: 'B4', pic: '1F6CF', alt: 'a bed', word: 'bedroom' },
         { id: 'B5', pic: '26BD', alt: 'a football', word: 'football' },
         { id: 'B6', pic: 'SHOULDER', alt: 'a child touching a shoulder', word: 'shoulder' }
@@ -199,10 +199,10 @@ export const CHALLENGE2 = {
       id: 'C', kind: 'gap', name: 'Grammar', marksEach: 1,
       help: 'Tap the word that fits the sentence.',
       qs: [
-        { id: 'C1', pic: '1F47E', alt: 'monsters', text: 'There ___ two monsters in the cellar.', ans: 'are', opts: ['are', 'is', 'am'] },
+        { id: 'C1', pic: '1F47E', alt: 'a monster', text: 'The monster is ___ the cellar.', ans: 'in', opts: ['in', 'on', 'at'] },
         { id: 'C2', pic: '1F456', alt: 'jeans', text: 'I am wearing blue ___.', ans: 'jeans', opts: ['jeans', 'jean', 'a jeans'] },
         { id: 'C3', pic: '26BD', alt: 'a football', text: 'He likes ___ football.', ans: 'playing', opts: ['playing', 'plays', 'play'] },
-        { id: 'C4', pic: '1F41A', alt: 'a shell', text: 'She ___ a shell.', ans: 'has', opts: ['has', 'have', 'are'] },
+        { id: 'C4', pic: '1F41A', alt: 'shells', text: 'The shells ___ on the sand.', ans: 'are', opts: ['are', 'is', 'am'] },
         { id: 'C5', pic: '1F4F7', alt: 'a camera', text: "Let's ___ a photo.", ans: 'take', opts: ['take', 'takes', 'taking'] },
         { id: 'C6', pic: '1F9E3', alt: 'a scarf', text: 'My scarf ___ red.', ans: 'is', opts: ['is', 'are', 'am'] }
       ]

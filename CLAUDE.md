@@ -90,7 +90,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   `/api/submit` checks the same, so typing the address does not skip the practice set.
 - Same shape in both: A Vocabulary 6 x 1; B Spelling: type the WHOLE word in letter boxes, 6 x 2 (1 mark if exactly one letter is wrong);
   C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 tiles, 5 x 3.
-- Challenge 2 words: bathroom, shell, play the guitar, monster, jeans, scarf; spelling jeans, kitchen, shell, bedroom, football, shoulder; sentences about sandcastle, football, monster, jeans, shoulder.
+- Challenge 2 words: bathroom, shells, play the guitar, monster, jeans, scarf; spelling jeans, kitchen, shells (the picture shows TWO shells, so the answer is plural), bedroom, football, shoulder; sentences about sandcastle, football, monster, jeans, shoulder.
 - Quizzes live in `api/_quiz.js` (PRACTICE, PRACTICE2, CHALLENGE, CHALLENGE2). Every new picture code must be added to `PICS`
   in `public/index.html`. The teacher page has a Test selector listing every test with questions.
 - The practice screen shows the set name (no "Mock test" wording for pupils).
@@ -99,3 +99,5 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.
 2. Mock test 2, medium: add Section C Grammar (Practice set 2 already types the whole spelling word).
 3. Final competition: full 60-mark paper, Sections A-E, with a question bank so pupils get different versions.
+
+- Check singular/plural against the picture (shells, socks, shoes and jeans show more than one; a monster, a crab and a boat show one). Picture counts must match the words.
