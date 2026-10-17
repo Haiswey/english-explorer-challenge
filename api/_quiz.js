@@ -5,13 +5,14 @@
 // Tests (each pupil does each test once):
 //   practice1  "Practice set 1"   35 marks. (the first test; keeps its old results id)
 //   practice2  "Practice set 2"   37 marks. Spelling = type the WHOLE word on plain lines, no letter hints.
-//   challenge  "Challenge level"  39 marks. Opens for pupils who scored every mark in a practice set.
+//   challenge  "Challenge for set 1"  39 marks. Opens for pupils who scored every mark in Practice set 1.
+//   challenge2 "Challenge for set 2"  39 marks. Opens for pupils who scored every mark in Practice set 2.
 //   real       "Real quiz"        not written yet: it only has an open/close switch for now.
 // Part kinds: choose (tap a word), letters (type letters into the gaps), word (type the whole word on lines),
 // gap (tap the word that fits the sentence), build (tap word tiles in order).
 
 export const PRACTICE = {
-  id: 'mock-easy-3', key: 'practice1', level: 'practice',
+  id: 'mock-easy-3', key: 'practice1', level: 'practice', next: 'challenge',
   title: 'English Explorer Challenge',
   subtitle: 'Practice set 1',
   parts: [
@@ -56,7 +57,7 @@ export const PRACTICE = {
 };
 
 export const PRACTICE2 = {
-  id: 'practice-set-2', key: 'practice2', level: 'practice',
+  id: 'practice-set-2', key: 'practice2', level: 'practice', next: 'challenge2',
   title: 'English Explorer Challenge',
   subtitle: 'Practice set 2',
   parts: [
@@ -108,9 +109,9 @@ export const PRACTICE2 = {
 };
 
 export const CHALLENGE = {
-  id: 'challenge-1', key: 'challenge', level: 'challenge',
+  id: 'challenge-1', key: 'challenge', level: 'challenge', after: 'practice1',
   title: 'English Explorer Challenge',
-  subtitle: 'Challenge level',
+  subtitle: 'Challenge for set 1',
   parts: [
     {
       id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
@@ -163,13 +164,71 @@ export const CHALLENGE = {
   ]
 };
 
-export const PRACTICES = [PRACTICE, PRACTICE2]; // a pupil who scores every mark in ANY of these unlocks the challenge
-export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE };
+export const CHALLENGE2 = {
+  // The challenge for Practice set 2: only for pupils who scored every mark in Practice set 2.
+  id: 'challenge-2', key: 'challenge2', level: 'challenge', after: 'practice2',
+  title: 'English Explorer Challenge',
+  subtitle: 'Challenge for set 2',
+  parts: [
+    {
+      id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
+      help: 'Look at the picture. Tap the correct word.',
+      qs: [
+        { id: 'A1', pic: '1F6C1', alt: 'a bathroom', ans: 'bathroom', opts: ['bathroom', 'bedroom', 'kitchen'] },
+        { id: 'A2', pic: '1F41A', alt: 'a shell', ans: 'shell', opts: ['shell', 'sandcastle', 'crab'] },
+        { id: 'A3', pic: '1F3B8', alt: 'a guitar', ans: 'play the guitar', opts: ['play the guitar', 'play chess', 'paint a picture'] },
+        { id: 'A4', pic: '1F47E', alt: 'a monster', ans: 'monster', opts: ['monster', 'ghost', 'robot'] },
+        { id: 'A5', pic: '1F456', alt: 'jeans', ans: 'jeans', opts: ['jeans', 'shorts', 'socks'] },
+        { id: 'A6', pic: '1F9E3', alt: 'a scarf', ans: 'scarf', opts: ['scarf', 'sweater', 'jacket'] }
+      ]
+    },
+    {
+      // Whole word: every letter is typed. One mark if exactly one letter is wrong.
+      id: 'B', kind: 'letters', exact: true, name: 'Spelling', marksEach: 2,
+      help: 'Look at the picture. Type the whole word.',
+      qs: [
+        { id: 'B1', pic: '1F456', alt: 'jeans', word: 'jeans' },
+        { id: 'B2', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
+        { id: 'B3', pic: '1F41A', alt: 'a shell', word: 'shell' },
+        { id: 'B4', pic: '1F6CF', alt: 'a bed', word: 'bedroom' },
+        { id: 'B5', pic: '26BD', alt: 'a football', word: 'football' },
+        { id: 'B6', pic: 'SHOULDER', alt: 'a child touching a shoulder', word: 'shoulder' }
+      ]
+    },
+    {
+      id: 'C', kind: 'gap', name: 'Grammar', marksEach: 1,
+      help: 'Tap the word that fits the sentence.',
+      qs: [
+        { id: 'C1', pic: '1F47E', alt: 'monsters', text: 'There ___ two monsters in the cellar.', ans: 'are', opts: ['are', 'is', 'am'] },
+        { id: 'C2', pic: '1F456', alt: 'jeans', text: 'I am wearing blue ___.', ans: 'jeans', opts: ['jeans', 'jean', 'a jeans'] },
+        { id: 'C3', pic: '26BD', alt: 'a football', text: 'He likes ___ football.', ans: 'playing', opts: ['playing', 'plays', 'play'] },
+        { id: 'C4', pic: '1F41A', alt: 'a shell', text: 'She ___ a shell.', ans: 'has', opts: ['has', 'have', 'are'] },
+        { id: 'C5', pic: '1F4F7', alt: 'a camera', text: "Let's ___ a photo.", ans: 'take', opts: ['take', 'takes', 'taking'] },
+        { id: 'C6', pic: '1F9E3', alt: 'a scarf', text: 'My scarf ___ red.', ans: 'is', opts: ['is', 'are', 'am'] }
+      ]
+    },
+    {
+      id: 'D', kind: 'build', name: 'Sentence building', marksEach: 3,
+      help: 'Tap the words in the correct order to make a sentence.',
+      qs: [
+        { id: 'D1', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: ['I', 'can', 'make', 'a', 'big', 'sandcastle', '.'] },
+        { id: 'D2', pic: '26BD', alt: 'a football', ans: ['My', 'brother', 'likes', 'to', 'play', 'football', '.'] },
+        { id: 'D3', pic: '1F47E', alt: 'a monster', ans: ['There', 'is', 'a', 'monster', 'in', 'the', 'cellar', '.'] },
+        { id: 'D4', pic: '1F456', alt: 'jeans', ans: ['I', 'am', 'wearing', 'my', 'new', 'jeans', '.'] },
+        { id: 'D5', pic: 'SHOULDER', alt: 'a child touching a shoulder', ans: ['The', 'boy', 'is', 'touching', 'his', 'shoulder', '.'] }
+      ]
+    }
+  ]
+};
+
+export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE, challenge2: CHALLENGE2 };
+// Each practice set has its own challenge: full marks in practice1 unlock `challenge`, full marks in practice2 unlock `challenge2`.
 // The tests the teacher can open or close for pupils, in the order shown. `real` has no questions yet.
 export const SETS = [
   { key: 'practice1', label: 'Practice set 1', ready: true, openByDefault: true },
   { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
-  { key: 'challenge', label: 'Challenge level', ready: true, openByDefault: true },
+  { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true },
+  { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false },
   { key: 'real', label: 'Real quiz', ready: false, openByDefault: false }
 ];
 // 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
@@ -195,7 +254,7 @@ function oneLetterWrong(a, b) {
 
 export function publicQuiz(quiz = PRACTICE) {
   return {
-    id: quiz.id, key: quiz.key, level: quiz.level, title: quiz.title, subtitle: quiz.subtitle, total: totalOf(quiz),
+    id: quiz.id, key: quiz.key, level: quiz.level, next: quiz.next || '', title: quiz.title, subtitle: quiz.subtitle, total: totalOf(quiz),
     parts: quiz.parts.map(p => ({
       id: p.id, kind: p.kind, name: p.name, marksEach: p.marksEach, help: p.help,
       qs: p.qs.map(q => {

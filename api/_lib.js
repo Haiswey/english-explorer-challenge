@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { put, list, del } from '@vercel/blob';
-import { PRACTICES, SETS } from './_quiz.js';
+import { QUIZZES, SETS } from './_quiz.js';
 
 // Names and classes come from the KK2 spelling app, so there is only one pupil list to keep up to date.
 export const SPELL = 'https://kk2spelling.vercel.app';
@@ -154,15 +154,14 @@ export async function deleteResult(testId, url) {
   if (rec && rec.klass && rec.name) await releaseAttempt({ id: testId }, rec.klass, rec.name);
 }
 
-// A pupil unlocks the challenge level by scoring every mark in ANY practice set. (Cheap: one marker read per set.)
-export async function hasFullMarks(klass, name) {
+// A pupil unlocks a challenge by scoring every mark in ITS practice set (challenge <- practice1, challenge2 <- practice2).
+// `practiceKey` is the `after` of the challenge. (Cheap: one marker read.)
+export async function hasFullMarks(klass, name, practiceKey) {
   const k = String(klass || '').trim().toUpperCase(), n = normName(name);
-  if (!k || !n) return false;
-  for (const quiz of PRACTICES) {
-    const a = await getAttempt(quiz, k, n);
-    if (a && (a.full === true || a.score === a.total)) return true;
-  }
-  return false;
+  const quiz = QUIZZES[practiceKey];
+  if (!k || !n || !quiz) return false;
+  const a = await getAttempt(quiz, k, n);
+  return !!(a && (a.full === true || a.score === a.total));
 }
 
 // ---- Open / close: which tests pupils can start ------------------------------------------------------------------

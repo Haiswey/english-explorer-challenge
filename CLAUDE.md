@@ -49,14 +49,15 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Tests and the open/close switches
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
-  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`), `real` (switch only, no questions yet).
+  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (switch only, no questions yet).
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
 - Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed,
-  challenge open, real closed. Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
+  challenge open, challenge2 closed, real closed. Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
   Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
   Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
   Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
-- Challenge unlock: full marks in ANY practice set (`hasFullMarks` loops `PRACTICES`).
+- Each practice set has its OWN challenge: full marks in Practice set 1 unlock `challenge`, full marks in Practice set 2 unlock `challenge2`
+  (`after` on the challenge quiz names its practice set; `next` on the practice set names its challenge; `hasFullMarks(klass, name, practiceKey)`).
 
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
 - Different words and sentences from Practice set 1, covering all five units. A Vocabulary 8 x 1 (ghost, dress, robot, ride a bike, take a photo, sandcastle*, beach, sun);
@@ -82,16 +83,17 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   en-US-AnaNeural, rate -10%). Never use speechSynthesis.
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
 
-## Challenge level: challenge-1 (39 marks, unlocked by full marks in the practice test)
-- A pupil who has EVER scored 35/35 in the practice test is offered the Challenge level: on the result screen and on the
-  "Hello, <name>" screen, on any device and after a retake. The page asks the server (`/api/quiz?level=challenge`, which
-  checks the pupil's practice results in Blob with `hasFullMarks` in `api/_lib.js`); `/api/submit` (level "challenge")
-  checks the same, so typing the address does not skip the practice test.
-- A Vocabulary 6 x 1; B Spelling: type the WHOLE word, 6 x 2 (1 mark if exactly one letter is wrong);
-  C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 words, 5 x 3.
-- Both quizzes live in `api/_quiz.js` (PRACTICE, CHALLENGE). Every new picture code must be added to `PICS`
-  in `public/index.html`. The teacher page has a Test selector (Practice / Challenge level).
-- The practice screen shows "Let's practice!" (no "Mock test" wording for pupils).
+## Challenge levels (39 marks each; one per practice set)
+- `challenge-1` ("Challenge for set 1") is only for pupils who EVER scored 35/35 in Practice set 1; `challenge-2` ("Challenge for set 2") only for 37/37 in Practice set 2.
+  The pupil is offered it on the result screen and on the "Hello, <name>" screen of THAT practice set, on any device and after a retake.
+  The page asks the server (`/api/quiz?set=<challenge key>&klass=&name=`, which checks the pupil's marker for the practice set with `hasFullMarks` in `api/_lib.js`);
+  `/api/submit` checks the same, so typing the address does not skip the practice set.
+- Same shape in both: A Vocabulary 6 x 1; B Spelling: type the WHOLE word in letter boxes, 6 x 2 (1 mark if exactly one letter is wrong);
+  C Grammar: tap the word that fits the sentence, 6 x 1; D Sentence building, 7-8 tiles, 5 x 3.
+- Challenge 2 words: bathroom, shell, play the guitar, monster, jeans, scarf; spelling jeans, kitchen, shell, bedroom, football, shoulder; sentences about sandcastle, football, monster, jeans, shoulder.
+- Quizzes live in `api/_quiz.js` (PRACTICE, PRACTICE2, CHALLENGE, CHALLENGE2). Every new picture code must be added to `PICS`
+  in `public/index.html`. The teacher page has a Test selector listing every test with questions.
+- The practice screen shows the set name (no "Mock test" wording for pupils).
 
 ## Planned tests
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.

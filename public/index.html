@@ -154,13 +154,13 @@ function readyScreen() {
 // A pupil who has EVER scored every mark in the practice test can enter the challenge, on any device and after a retake.
 // The server holds the results, so ask it (the challenge questions only come back for an eligible pupil).
 async function offerChallenge() {
-  if (!S || QZ.level !== 'practice') return;
+  if (!S || QZ.level !== 'practice' || !QZ.next) return;
   const me = S, box = document.getElementById('chalbox');
   if (!box || box.querySelector('#chal')) return;
   try {
-    const r = await fetch('/api/quiz?set=challenge&klass=' + encodeURIComponent(me.klass) + '&name=' + encodeURIComponent(me.name), { cache: 'no-store' });
+    const r = await fetch('/api/quiz?set=' + QZ.next + '&klass=' + encodeURIComponent(me.klass) + '&name=' + encodeURIComponent(me.name), { cache: 'no-store' });
     if (!r.ok || S !== me || !document.getElementById('chalbox') || document.querySelector('#chal')) return;
-    document.getElementById('chalbox').innerHTML = '<div class="unlock"><h2 class="head" style="font-size:26px;margin:0 0 6px">Challenge level is open for you!</h2><p style="margin:0 0 12px">You got every answer right in the practice test. Do you want harder questions?</p><p class="err" id="cerr"></p><button class="btn go" id="chal">Start the challenge</button></div>';
+    document.getElementById('chalbox').innerHTML = '<div class="unlock"><h2 class="head" style="font-size:26px;margin:0 0 6px">Challenge level is open for you!</h2><p style="margin:0 0 12px">You got every answer right in ' + esc(QZ.subtitle) + '. Do you want harder questions?</p><p class="err" id="cerr"></p><button class="btn go" id="chal">Start the challenge</button></div>';
     document.getElementById('chal').onclick = startChallenge;
   } catch (e) {}
 }
@@ -304,7 +304,7 @@ async function startChallenge() {
   const { klass, name } = S;
   btn.disabled = true; btn.textContent = 'Loading…'; err.textContent = '';
   try {
-    const r = await fetch('/api/quiz?set=challenge&klass=' + encodeURIComponent(klass) + '&name=' + encodeURIComponent(name), { cache: 'no-store' });
+    const r = await fetch('/api/quiz?set=' + QZ.next + '&klass=' + encodeURIComponent(klass) + '&name=' + encodeURIComponent(name), { cache: 'no-store' });
     const j = await r.json();
     if (!r.ok) throw new Error(j.closed ? 'The challenge is closed now.' : (j.error || 'The challenge did not load.'));
     QZ = j; window.scrollTo(0, 0); pickName(klass, name);
