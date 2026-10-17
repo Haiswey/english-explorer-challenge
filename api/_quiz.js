@@ -61,31 +61,34 @@ export const PRACTICE2 = {
   subtitle: 'Practice set 2',
   parts: [
     {
+      // Different pictures and words from Practice set 1; together they cover Units 5-9
+      // (free time, the old house, get dressed, the robot, at the beach).
       id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
       help: 'Look at the picture. Tap the correct word.',
       qs: [
         { id: 'A1', pic: '1F47B', alt: 'a ghost', ans: 'ghost', opts: ['ghost', 'monster', 'robot'] },
-        { id: 'A2', pic: '1F980', alt: 'a crab', ans: 'crab', opts: ['crab', 'shell', 'fish'] },
-        { id: 'A3', pic: '26F5', alt: 'a boat on the sea', ans: 'boat', opts: ['boat', 'bucket', 'kite'] },
-        { id: 'A4', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: 'sandcastle', opts: ['sandcastle', 'sea', 'sand'] },
-        { id: 'A5', pic: '1F6B2', alt: 'a bicycle', ans: 'ride a bike', opts: ['ride a bike', 'play chess', 'take a photo'] },
-        { id: 'A6', pic: '1F457', alt: 'a dress', ans: 'dress', opts: ['dress', 'skirt', 'shorts'] },
-        { id: 'A7', pic: '1F916', alt: 'a robot', ans: 'robot', opts: ['robot', 'ghost', 'monster'] },
-        { id: 'A8', pic: '1F3D6', alt: 'a beach with an umbrella', ans: 'beach', opts: ['beach', 'garden', 'kitchen'] }
+        { id: 'A2', pic: '1F457', alt: 'a dress', ans: 'dress', opts: ['dress', 'skirt', 'shorts'] },
+        { id: 'A3', pic: '1F916', alt: 'a robot', ans: 'robot', opts: ['robot', 'ghost', 'monster'] },
+        { id: 'A4', pic: '1F6B2', alt: 'a bicycle', ans: 'ride a bike', opts: ['ride a bike', 'play football', 'listen to music'] },
+        { id: 'A5', pic: '1F4F7', alt: 'a camera', ans: 'take a photo', opts: ['take a photo', 'paint a picture', 'read a book'] },
+        { id: 'A6', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: 'sandcastle', opts: ['sandcastle', 'boat', 'kite'] },
+        { id: 'A7', pic: '1F3D6', alt: 'a beach with an umbrella', ans: 'beach', opts: ['beach', 'garden', 'kitchen'] },
+        { id: 'A8', pic: '2600', alt: 'the sun', ans: 'sun', opts: ['sun', 'sea', 'sand'] }
       ]
     },
     {
       // The whole word is typed on plain lines: no boxes, no letters shown, no hint about the length.
-      // Full marks for the exact word, 1 mark when the word has the right length and exactly one letter is wrong; a missing or extra letter gets 0.
-      // B6 shoulder and B7 scarf (and A4 sandcastle) are extra words: same themes as Units 5-9, a little beyond the book list.
+      // Full marks for the exact word; 1 mark when the word has the right length and exactly one letter is wrong;
+      // a missing or extra letter gets 0.
+      // shoulder, scarf (and A6 sandcastle) are extra words: same themes as Units 5-9, a little beyond the book list.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
       help: 'Look at the picture. Type the word on the lines.',
       qs: [
-        { id: 'B1', pic: '1F9E6', alt: 'socks', word: 'socks' },
-        { id: 'B2', pic: '1F9E2', alt: 'a cap', word: 'cap' },
-        { id: 'B3', pic: '270B', alt: 'a hand', word: 'hand' },
-        { id: 'B4', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
-        { id: 'B5', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
+        { id: 'B1', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
+        { id: 'B2', pic: '1F980', alt: 'a crab', word: 'crab' },
+        { id: 'B3', pic: '26F5', alt: 'a boat on the sea', word: 'boat' },
+        { id: 'B4', pic: '1F3B8', alt: 'a guitar', word: 'guitar' },
+        { id: 'B5', pic: '1F47E', alt: 'a monster', word: 'monster' },
         { id: 'B6', pic: 'SHOULDER', alt: 'a child touching a shoulder', word: 'shoulder' },
         { id: 'B7', pic: '1F9E3', alt: 'a scarf', word: 'scarf' }
       ]
@@ -94,11 +97,11 @@ export const PRACTICE2 = {
       id: 'D', kind: 'build', name: 'Sentence building', marksEach: 3,
       help: 'Tap the words in the correct order to make a sentence.',
       qs: [
-        { id: 'D1', pic: '1F366', alt: 'an ice cream', ans: ['I', 'like', 'ice', 'cream', '.'] },
-        { id: 'D2', pic: '1F45F', alt: 'red shoes', ans: ['I', 'am', 'wearing', 'red', 'shoes', '.'] },
-        { id: 'D3', pic: '1F6CF', alt: 'a bed with a blue blanket', ans: ['My', 'bed', 'is', 'blue', '.'] },
-        { id: 'D4', pic: '1F4D6', alt: 'a book', ans: ['I', 'like', 'to', 'read', 'books', '.'] },
-        { id: 'D5', pic: '1F3A3', alt: 'a fishing rod and fish', ans: ['I', 'can', 'catch', 'a', 'fish', '.'] }
+        { id: 'D1', pic: '1F6B2', alt: 'a bicycle', ans: ['I', 'can', 'ride', 'my', 'bike', '.'] },
+        { id: 'D2', pic: '1F47B', alt: 'a ghost', ans: ['The', 'ghost', 'is', 'in', 'my', 'house', '.'] },
+        { id: 'D3', pic: '1F457', alt: 'a dress', ans: ['She', 'is', 'wearing', 'a', 'dress', '.'] },
+        { id: 'D4', pic: '1F916', alt: 'a robot', ans: ['The', 'robot', 'has', 'two', 'arms', '.'] },
+        { id: 'D5', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', ans: ['I', 'can', 'make', 'a', 'sandcastle', '.'] }
       ]
     }
   ]
