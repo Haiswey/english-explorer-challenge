@@ -51,8 +51,9 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
   `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (switch only, no questions yet).
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
-- Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed,
-  challenge open, challenge2 closed, real closed. Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
+- Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed, real closed.
+  A challenge is LINKED to its practice set (`linkedTo` in `SETS`): it is open exactly when its practice set is open, and opening or closing either one
+  changes the pair (one put). The teacher panel shows one row per practice set ("and its challenge"). Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
   Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
   Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
   Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
@@ -105,3 +106,5 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 3. Final competition: full 60-mark paper, Sections A-E, with a question bank so pupils get different versions.
 
 - Check singular/plural against the picture (shells, socks, shoes and jeans show more than one; a monster, a crab and a boat show one). Picture counts must match the words.
+
+- Pupil question screen: a sticky bar at the top (name and class, "Question X of N", a green progress bar and "X of N answered") stays visible while scrolling; the numbered trail is below it.

@@ -92,6 +92,11 @@ img { max-width: 100%; }
 .part-gap { flex: 0 0 14px; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .who { font-size: 16px; color: var(--muted); }
+/* Stays at the top of the screen while the pupil scrolls: who, which question, and how many are answered */
+.topbar { position: sticky; top: 0; z-index: 10; background: var(--sky); margin: 0 -4px 6px; padding: 8px 4px 6px; }
+.bar { height: 12px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 6px; }
+.bar > span { display: block; height: 100%; border-radius: 99px; background: var(--jungle); transition: width .25s; }
+.barnote { font-size: 15px; margin-top: 3px; }
 
 .qcard { background: var(--card); border: 2px solid var(--line); border-radius: 24px; padding: 20px; }
 .qhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }

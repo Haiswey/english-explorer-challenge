@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     }
     const results = await getResults(QUIZ.id);
     res.status(200).json({ role, key: QUIZ.key, open: await getOpenState(),
-      sets: SETS.map(s => ({ key: s.key, label: s.label, hasQuiz: !!QUIZZES[s.key] })), testId: QUIZ.id, title: QUIZ.title, total: totalOf(QUIZ), level: QUIZ.level,
+      sets: SETS.map(s => ({ key: s.key, label: s.label, hasQuiz: !!QUIZZES[s.key], linkedTo: s.linkedTo || '' })), testId: QUIZ.id, title: QUIZ.title, total: totalOf(QUIZ), level: QUIZ.level,
       parts: QUIZ.parts.map(p => ({ id: p.id, name: p.name, max: p.qs.length * p.marksEach })), results });
   } catch (e) {
     res.status(500).json({ error: 'Could not finish: ' + e.message });

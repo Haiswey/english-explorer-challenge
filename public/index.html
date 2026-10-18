@@ -218,7 +218,10 @@ function qScreen() {
       }).join('') + '</div>';
   }
   const last = S.i === S.seq.length - 1;
-  app.innerHTML = '<div class="top"><span class="who">' + esc(S.name) + ', ' + esc(S.klass) + '</span><span class="who">Question ' + (S.i + 1) + ' of ' + S.seq.length + '</span></div>' + trail() +
+  const doneN = S.seq.filter(answered).length, total = S.seq.length;
+  app.innerHTML = '<div class="topbar"><div class="top"><span class="who">' + esc(S.name) + ', ' + esc(S.klass) + '</span><span class="who"><b>Question ' + (S.i + 1) + ' of ' + total + '</b></span></div>' +
+    '<div class="bar" role="progressbar" aria-label="Questions answered" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + doneN + '"><span style="width:' + Math.round(doneN / total * 100) + '%"></span></div>' +
+    '<div class="who barnote">' + doneN + ' of ' + total + ' answered</div></div>' + trail() +
     '<section class="qcard"><div class="qhead"><h2>Part ' + pn + ': ' + esc(p.name) + '</h2><span class="marks">' + p.marksEach + (p.marksEach > 1 ? ' marks' : ' mark') + '</span></div>' +
     '<p class="help">' + esc(p.help) + '</p>' + body + '</section>' +
     '<div class="actions"><button class="btn ghost" id="prev"' + (S.i === 0 ? ' disabled' : '') + '>Back</button><button class="btn" id="next">' + (last ? 'Check my answers' : 'Next') + '</button></div>';

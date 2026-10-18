@@ -174,10 +174,14 @@ export async function getOpenState() {
     const v = saved[s.key];
     out[s.key] = v && typeof v.open === 'boolean' ? { open: v.open, at: v.at || 0 } : { open: s.openByDefault, at: 0 };
   }
+  // A challenge is linked to its practice set: it is open exactly when the practice set is open.
+  for (const s of SETS) if (s.linkedTo) out[s.key] = { ...out[s.linkedTo] };
   return out;
 }
 export async function setOpen(key, open) {
-  if (!SETS.some(s => s.key === key)) throw new Error('Unknown test.');
+  const set = SETS.find(s => s.key === key);
+  if (!set) throw new Error('Unknown test.');
+  if (set.linkedTo) key = set.linkedTo; // opening or closing a challenge changes its practice set (and so both)
   const state = await getOpenState();
   state[key] = { open: !!open, at: Date.now() };
   await put(OPEN_PATH, JSON.stringify(state), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });

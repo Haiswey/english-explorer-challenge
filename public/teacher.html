@@ -122,9 +122,10 @@ function lockPage() {
 }
 // Which tests can pupils start? One row per test with an Open / Close button.
 function renderOpen() {
-  $('opens').innerHTML = DATA.sets.map(s => {
+  $('opens').innerHTML = DATA.sets.filter(s => !s.linkedTo).map(s => {
     const o = DATA.open[s.key] && DATA.open[s.key].open;
-    return '<div class="orow"><span class="oname">' + esc(s.label) + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
+    const chal = DATA.sets.find(x => x.linkedTo === s.key);
+    return '<div class="orow"><span class="oname">' + esc(s.label) + (chal ? ' <span class="muted">and its challenge</span>' : '') + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
       '<span class="chip ' + (o ? 'on' : 'off') + '">' + (o ? 'Open' : 'Closed') + '</span>' +
       '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button></div>';
   }).join('');

@@ -227,8 +227,8 @@ export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: C
 export const SETS = [
   { key: 'practice1', label: 'Practice set 1', ready: true, openByDefault: true },
   { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
-  { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true },
-  { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false },
+  { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true, linkedTo: 'practice1' },
+  { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false, linkedTo: 'practice2' },
   { key: 'real', label: 'Real quiz', ready: false, openByDefault: false }
 ];
 // 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
