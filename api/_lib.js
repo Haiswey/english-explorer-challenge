@@ -65,6 +65,12 @@ export async function saveResult(testId, rec) {
 // the marker too). Results saved before markers existed are found by reading the results once a minute.
 const normName = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
 const safeId = id => String(id).replace(/[^a-z0-9-]/gi, '');
+// Five test pupils per class, so a teacher can try the quiz exactly as a pupil sees it. They are NOT real pupils:
+// nothing is saved for them (no result, no marker), they can do every test again and again, and they can always enter a challenge.
+export const TEST_NAMES = [1, 2, 3, 4, 5].map(n => 'Test Pupil ' + n);
+export const isTestPupil = name => TEST_NAMES.some(t => normName(t) === normName(name));
+// Shown in the name search only when the teacher types "test" (4 letters or more), so real pupils never see them.
+export const testNames = q => { const s = normName(q); return s.length >= 4 ? TEST_NAMES.filter(t => normName(t).startsWith(s)) : []; };
 const attemptKey = (klass, name) => String(klass || '').toUpperCase() + '-' + createHash('sha1').update(normName(name)).digest('hex').slice(0, 24);
 const markerPath = (quizId, klass, name) => `attempts/${safeId(quizId)}/${attemptKey(klass, name)}.json`;
 function blobUrlFor(pathname) {

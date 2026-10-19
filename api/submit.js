@@ -1,4 +1,4 @@
-import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt, getOpenState, mayHandIn } from './_lib.js';
+import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt, getOpenState, mayHandIn, isTestPupil } from './_lib.js';
 import { getQuiz, mark } from './_quiz.js';
 
 export default async function handler(req, res) {
@@ -13,6 +13,11 @@ export default async function handler(req, res) {
     // A closed test takes no new pupils; one who started before it closed may still hand in.
     if (!mayHandIn(await getOpenState(), QUIZ.key, body.startedAt)) {
       return res.status(403).json({ error: 'This test is closed now. Please tell your teacher.', closed: true });
+    }
+    // A teacher's test pupil: mark it and show the score, but save nothing and allow it every time.
+    if (isTestPupil(name)) {
+      const t = mark(QUIZ, body.answers);
+      return res.status(200).json({ score: t.score, total: t.total, parts: t.parts, test: true });
     }
     if (QUIZ.after && !(await hasFullMarks(klass, name, QUIZ.after))) {
       return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice set.' });

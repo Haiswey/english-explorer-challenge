@@ -1,5 +1,5 @@
 import { publicQuiz, QUIZZES, SETS } from './_quiz.js';
-import { year2Classes, hasFullMarks, getOpenState } from './_lib.js';
+import { year2Classes, hasFullMarks, getOpenState, isTestPupil } from './_lib.js';
 
 // GET /api/quiz                          -> the class list and the tests that are OPEN for pupils (no questions)
 // GET /api/quiz?set=practice1|practice2  -> the questions of that test (only while it is open)
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   if (quiz && quiz.after) { // a challenge: only for a pupil who scored every mark in its practice set
     try {
       if (!state[key].open) return res.status(403).json({ error: 'The challenge is closed now.', closed: true });
-      if (!(await hasFullMarks(q.klass, q.name, quiz.after))) {
+      if (!isTestPupil(q.name) && !(await hasFullMarks(q.klass, q.name, quiz.after))) {
         return res.status(403).json({ error: 'Get every answer right in the practice set to unlock the challenge.' });
       }
       return res.status(200).json(publicQuiz(quiz));

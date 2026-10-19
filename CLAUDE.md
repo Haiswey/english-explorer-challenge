@@ -60,6 +60,14 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Each practice set has its OWN challenge: full marks in Practice set 1 unlock `challenge`, full marks in Practice set 2 unlock `challenge2`
   (`after` on the challenge quiz names its practice set; `next` on the practice set names its challenge; `hasFullMarks(klass, name, practiceKey)`).
 
+## Test pupils (for teachers)
+- Five test pupils in EVERY class: `Test Pupil 1` to `Test Pupil 5` (`TEST_NAMES`, `isTestPupil`, `testNames` in `api/_lib.js`). A teacher picks any class, types "test" (4+ letters,
+  so real pupils never see them) and taps a name. They are not in the spelling app roster; `api/roster.js` adds them to the search.
+- They behave like pupils but save NOTHING: `api/submit.js` marks and returns the score with `test: true` (no result file, no marker, 0 Blob writes), they can repeat every test
+  (`/api/attempt` says not done; the page ignores saved progress for them), and they can always enter an OPEN challenge (`api/quiz.js` skips `hasFullMarks`).
+  Their scores never show on the teacher page. A test must still be OPEN for them to start it (they do not bypass the open/close switches).
+  The teacher page explains this in the open/close panel.
+
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
 - Words come from the school's "Year 2 Spelling List 2026" (Miss Irene's docx; Topics 5-9 plus habitats and animals). Different words and sentences from Practice set 1.
   A Vocabulary 8 x 1 (take a photo, make a sandcastle, T-shirt, desert, jungle, ocean, penguin, robot);
