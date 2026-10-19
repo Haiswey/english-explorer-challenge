@@ -46,6 +46,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   a long name wraps to a second line; "name not on list" and "retake" tags sit on a second line under the name; screens
   900 px wide or less show each pupil as a small card instead of a table row.
   Only each pupil's first attempt is ranked; retakes are shown separately.
+  Time: the pupil's device clock measures it (start tap to submit). Over 3 hours means the device clock was wrong, so the server saves `seconds: null` and the teacher page shows a dash and ranks it last among equal scores (older records with huge times are treated the same way).
 
 ## Tests and the open/close switches
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),

@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     const rec = {
       testId: QUIZ.id, title: QUIZ.title, name, klass, verified,
       score: m.score, total: m.total, parts: m.parts, rows: m.rows,
-      startedAt, submittedAt: now, seconds: Math.round((now - startedAt) / 1000)
+      startedAt, submittedAt: now, seconds: (now - startedAt) / 1000 <= 10800 ? Math.round((now - startedAt) / 1000) : null // over 3 hours = the device clock was wrong
     };
     const summary = { score: m.score, total: m.total, parts: m.parts };
     const earlier = await claimAttempt(QUIZ, klass, name, summary);

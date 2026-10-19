@@ -100,7 +100,10 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let DATA = null, PIN = sessionStorage.getItem('kkx-pin') || '';
-const mmss = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+// A time over 3 hours (or missing) is not real: it means the pupil's device clock was wrong. Show a dash and rank it last among equal scores.
+const goodSec = s => typeof s === 'number' && s >= 0 && s <= 10800;
+const secKey = s => goodSec(s) ? s : Infinity;
+const mmss = s => goodSec(s) ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') : '–';
 const when = t => new Date(t).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const PARTNAME = { A: 'Vocabulary', B: 'Spelling', D: 'Sentence building' };
 
@@ -164,8 +167,8 @@ function tagAttempts(list) {
     const k = r.klass + '|' + String(r.name).replace(/\s+/g, ' ').trim().toLowerCase(); seen[k] = (seen[k] || 0) + 1; return { ...r, attempt: seen[k] };
   });
 }
-const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0)) || ((b.parts.B || 0) - (a.parts.B || 0)) || (a.seconds - b.seconds);
-const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && a.seconds === b.seconds;
+const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0)) || ((b.parts.B || 0) - (a.parts.B || 0)) || (secKey(a.seconds) === secKey(b.seconds) ? 0 : secKey(a.seconds) < secKey(b.seconds) ? -1 : 1);
+const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && secKey(a.seconds) === secKey(b.seconds);
 let SHOWN = [];
 function render() {
   $('thead').innerHTML = '<th class="num">Rank</th><th class="nm">Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num part"><span class="hn">' + esc(p.name) + '</span><span class="hm">/' + p.max + '</span></th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
@@ -211,7 +214,7 @@ function detail(r) {
 }
 function csv() {
   const head = ['Rank', 'Name', 'Class', 'Attempt', 'Total'].concat(DATA.parts.map(p => p.name), ['Seconds', 'Submitted']);
-  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [r.seconds, new Date(r.submittedAt).toISOString()])));
+  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [goodSec(r.seconds) ? r.seconds : '', new Date(r.submittedAt).toISOString()])));
   const text = lines.map(l => l.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv' }));
   a.download = 'english-explorer-' + $('lvl').value + '-' + ($('cls').value || 'year2') + '.csv'; a.click();
