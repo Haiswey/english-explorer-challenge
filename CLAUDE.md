@@ -107,4 +107,5 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 - Check singular/plural against the picture (shells, socks, shoes and jeans show more than one; a monster, a crab and a boat show one). Picture counts must match the words.
 
-- Pupil question screen: a sticky bar at the top (name and class, "Question X of N", a green progress bar and "X of N answered") stays visible while scrolling; the numbered trail is below it.
+- Pupil question screen: a sticky bar at the top (name and class, "Question X of N", and the numbered circles) stays visible while scrolling. The circles ARE the progress bar:
+  a circle lights up green when its question is answered, the yellow one is where the pupil is now; with many questions the numbers are hidden and they show as plain lights (`fitTrail`).
