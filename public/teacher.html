@@ -75,10 +75,12 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
     <button class="btn" id="go">Show results</button>
   </section>
   <section id="res" hidden>
-    <div class="panel openbox"><h2 class="head" style="font-size:22px;margin:0 0 4px" id="openshead">Open or close tests for pupils</h2>
-      <p class="muted" id="opensnote" style="margin:0 0 10px;font-size:15px">Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.</p>
-      <p class="muted" style="margin:0 0 10px;font-size:15px"><b>Try it yourself:</b> on the pupil page choose any class, type <b>test</b> and tap <b>Test Pupil 1</b> to <b>5</b>. Test pupils can do every test again and again, and their scores are not shown here. <b>Test Pupil 1</b> must score full marks in a practice set to unlock its challenge, like a real pupil (its latest try counts). <b>Test Pupils 2 to 5</b> can always enter an open challenge.</p>
-      <div id="opens"></div></div>
+    <div class="panel openbox">
+      <p style="margin:0 0 8px" id="nowopen"></p>
+      <p class="muted" style="margin:0;font-size:15px"><b>Try it yourself:</b> on the pupil page choose any class, type <b>test</b> and tap <b>Test Pupil 1</b> to <b>5</b>. Test pupils can do every test again and again, and their scores are not shown here. <b>Test Pupil 1</b> must score full marks in a practice set to unlock its challenge, like a real pupil (its latest try counts). <b>Test Pupils 2 to 5</b> can always enter an open challenge.</p>
+      <details id="adminopen" hidden style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Admin: open or close tests</summary>
+        <p class="muted" style="margin:6px 0 4px;font-size:15px">Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.</p>
+        <div id="opens"></div></details></div>
     <div class="bar">
       <label>Test <select id="lvl"><option value="practice1">Practice set 1</option></select></label>
       <label>Class <select id="cls"><option value="">All Year 2</option></select></label>
@@ -130,8 +132,9 @@ function renderOpen() {
       '<span class="chip ' + (o ? 'on' : 'off') + '">' + (o ? 'Open' : 'Closed') + '</span>' +
       (isAdmin() ? '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button>' : '') + '</div>';
   }).join('');
-  $('openshead').textContent = isAdmin() ? 'Open or close tests for pupils' : 'Tests open for pupils';
-  $('opensnote').textContent = isAdmin() ? 'Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.' : 'These are the tests pupils can start now. Only the admin can open or close tests.';
+  const going = DATA.sets.filter(s => !s.linkedTo && s.hasQuiz && DATA.open[s.key] && DATA.open[s.key].open).map(s => esc(s.label) + (DATA.sets.some(x => x.linkedTo === s.key) ? ' and its challenge' : ''));
+  $('nowopen').innerHTML = going.length ? '<b>Open for pupils now:</b> ' + going.join('; ') + '.' : '<b>No test is open for pupils right now.</b>';
+  $('adminopen').hidden = !isAdmin();
   $('opens').querySelectorAll('[data-open]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     try {
