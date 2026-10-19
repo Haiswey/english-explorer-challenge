@@ -63,10 +63,11 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 ## Test pupils (for teachers)
 - Five test pupils in EVERY class: `Test Pupil 1` to `Test Pupil 5` (`TEST_NAMES`, `isTestPupil`, `testNames` in `api/_lib.js`). A teacher picks any class, types "test" (4+ letters,
   so real pupils never see them) and taps a name. They are not in the spelling app roster; `api/roster.js` adds them to the search.
-- They behave like pupils but save NOTHING: `api/submit.js` marks and returns the score with `test: true` (no result file, no marker, 0 Blob writes), they can repeat every test
-  (`/api/attempt` says not done; the page ignores saved progress for them), and they can always enter an OPEN challenge (`api/quiz.js` skips `hasFullMarks`).
-  Their scores never show on the teacher page. A test must still be OPEN for them to start it (they do not bypass the open/close switches).
-  The teacher page explains this in the open/close panel.
+- They behave like pupils but save NO result: `api/submit.js` marks and returns the score with `test: true` (no result file, no one-attempt marker), they can repeat every test
+  (`/api/attempt` says not done; the page ignores saved progress for them). Their scores never show on the teacher page. A test must still be OPEN for them to start it
+  (they do not bypass the open/close switches). The teacher page explains this in the open/close panel.
+- Challenge: **Test Pupil 1** earns it like a real pupil: each practice try leaves ONE small marker (`rememberTestResult`, overwrite, 1 put) and its LATEST try decides
+  (full marks unlocks, a later non-full try locks again). **Test Pupils 2-5** can always enter an open challenge (`challengeAlwaysOpen` in `api/_lib.js`).
 
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
 - Words come from the school's "Year 2 Spelling List 2026" (Miss Irene's docx; Topics 5-9 plus habitats and animals). Different words and sentences from Practice set 1.

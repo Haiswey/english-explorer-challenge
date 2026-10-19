@@ -1,4 +1,4 @@
-import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt, getOpenState, mayHandIn, isTestPupil } from './_lib.js';
+import { readBody, saveResult, rosterSearch, year2Classes, hasFullMarks, getAttempt, claimAttempt, releaseAttempt, getOpenState, mayHandIn, isTestPupil, challengeAlwaysOpen, mustEarnChallenge, rememberTestResult } from './_lib.js';
 import { getQuiz, mark } from './_quiz.js';
 
 export default async function handler(req, res) {
@@ -14,13 +14,15 @@ export default async function handler(req, res) {
     if (!mayHandIn(await getOpenState(), QUIZ.key, body.startedAt)) {
       return res.status(403).json({ error: 'This test is closed now. Please tell your teacher.', closed: true });
     }
-    // A teacher's test pupil: mark it and show the score, but save nothing and allow it every time.
+    if (QUIZ.after && !challengeAlwaysOpen(name) && !(await hasFullMarks(klass, name, QUIZ.after))) {
+      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice set.' });
+    }
+    // A teacher's test pupil: mark it and show the score, but save no result and allow it every time.
+    // Only Test Pupil 1 leaves one small note (its latest practice score) so the challenge unlock can be tried like a real pupil.
     if (isTestPupil(name)) {
       const t = mark(QUIZ, body.answers);
+      if (mustEarnChallenge(name) && QUIZ.next) await rememberTestResult(QUIZ, klass, name, { score: t.score, total: t.total, parts: t.parts });
       return res.status(200).json({ score: t.score, total: t.total, parts: t.parts, test: true });
-    }
-    if (QUIZ.after && !(await hasFullMarks(klass, name, QUIZ.after))) {
-      return res.status(403).json({ error: 'The challenge is for pupils who got every answer right in the practice set.' });
     }
 
     // One attempt only: a second submit (another device, a reload, a retake) gets the pupil's first result back.

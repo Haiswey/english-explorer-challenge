@@ -69,6 +69,14 @@ const safeId = id => String(id).replace(/[^a-z0-9-]/gi, '');
 // nothing is saved for them (no result, no marker), they can do every test again and again, and they can always enter a challenge.
 export const TEST_NAMES = [1, 2, 3, 4, 5].map(n => 'Test Pupil ' + n);
 export const isTestPupil = name => TEST_NAMES.some(t => normName(t) === normName(name));
+// Test Pupil 1 works like a real pupil for the challenge: it must score every mark in the practice set (its LATEST attempt counts) to unlock it.
+// Test Pupils 2-5 can always enter an open challenge.
+export const mustEarnChallenge = name => normName(name) === 'test pupil 1';
+export const challengeAlwaysOpen = name => isTestPupil(name) && !mustEarnChallenge(name);
+// Remember Test Pupil 1's latest practice result (one put), so `hasFullMarks` can find it.
+export async function rememberTestResult(quiz, klass, name, summary) {
+  await put(markerPath(quiz.id, klass, name), JSON.stringify({ ...summary, full: summary.score === summary.total }), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+}
 // Shown in the name search only when the teacher types "test" (4 letters or more), so real pupils never see them.
 export const testNames = q => { const s = normName(q); return s.length >= 4 ? TEST_NAMES.filter(t => normName(t).startsWith(s)) : []; };
 const attemptKey = (klass, name) => String(klass || '').toUpperCase() + '-' + createHash('sha1').update(normName(name)).digest('hex').slice(0, 24);
