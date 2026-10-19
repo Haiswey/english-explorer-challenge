@@ -53,7 +53,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
 - Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed, real closed.
   A challenge is LINKED to its practice set (`linkedTo` in `SETS`): it is open exactly when its practice set is open, and opening or closing either one
-  changes the pair (one put). The teacher panel shows one row per practice set ("and its challenge"). Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
+  changes the pair (one put). The teacher panel shows one row per practice set ("and its challenge"). ONLY the admin PIN can open/close (`api/results.js` answers 403 to a teacher PIN; the teacher page shows a plain line "Open for pupils now: ..." plus the test pupil note to everyone, and a collapsed "Admin: open or close tests" section with the Open/Close buttons only for the admin) and only the admin can delete scores.
   Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
   Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
   Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
