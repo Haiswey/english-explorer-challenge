@@ -51,13 +51,23 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
   `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (switch only, no questions yet).
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
-- Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed,
-  challenge open, challenge2 closed, real closed. Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
+- Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed, real closed.
+  A challenge is LINKED to its practice set (`linkedTo` in `SETS`): it is open exactly when its practice set is open, and opening or closing either one
+  changes the pair (one put). The teacher panel shows one row per practice set ("and its challenge"). Any teacher PIN can open/close (teacher page panel "Open or close tests for pupils"); only admin can delete scores.
   Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
   Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
   Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
 - Each practice set has its OWN challenge: full marks in Practice set 1 unlock `challenge`, full marks in Practice set 2 unlock `challenge2`
   (`after` on the challenge quiz names its practice set; `next` on the practice set names its challenge; `hasFullMarks(klass, name, practiceKey)`).
+
+## Test pupils (for teachers)
+- Five test pupils in EVERY class: `Test Pupil 1` to `Test Pupil 5` (`TEST_NAMES`, `isTestPupil`, `testNames` in `api/_lib.js`). A teacher picks any class, types "test" (4+ letters,
+  so real pupils never see them) and taps a name. They are not in the spelling app roster; `api/roster.js` adds them to the search.
+- They behave like pupils but save NO result: `api/submit.js` marks and returns the score with `test: true` (no result file, no one-attempt marker), they can repeat every test
+  (`/api/attempt` says not done; the page ignores saved progress for them). Their scores never show on the teacher page. A test must still be OPEN for them to start it
+  (they do not bypass the open/close switches). The teacher page explains this in the open/close panel.
+- Challenge: **Test Pupil 1** earns it like a real pupil: each practice try leaves ONE small marker (`rememberTestResult`, overwrite, 1 put) and its LATEST try decides
+  (full marks unlocks, a later non-full try locks again). **Test Pupils 2-5** can always enter an open challenge (`challengeAlwaysOpen` in `api/_lib.js`).
 
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
 - Words come from the school's "Year 2 Spelling List 2026" (Miss Irene's docx; Topics 5-9 plus habitats and animals). Different words and sentences from Practice set 1.
@@ -105,3 +115,6 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 3. Final competition: full 60-mark paper, Sections A-E, with a question bank so pupils get different versions.
 
 - Check singular/plural against the picture (shells, socks, shoes and jeans show more than one; a monster, a crab and a boat show one). Picture counts must match the words.
+
+- Pupil question screen: a sticky bar at the top (name and class, "Question X of N", and the numbered circles) stays visible while scrolling. The circles ARE the progress bar:
+  a circle lights up green when its question is answered, the yellow one is where the pupil is now; with many questions the numbers are hidden and they show as plain lights (`fitTrail`).

@@ -77,6 +77,7 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
   <section id="res" hidden>
     <div class="panel openbox"><h2 class="head" style="font-size:22px;margin:0 0 4px">Open or close tests for pupils</h2>
       <p class="muted" style="margin:0 0 10px;font-size:15px">Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.</p>
+      <p class="muted" style="margin:0 0 10px;font-size:15px"><b>Try it yourself:</b> on the pupil page choose any class, type <b>test</b> and tap <b>Test Pupil 1</b> to <b>5</b>. Test pupils can do every test again and again, and their scores are not shown here. <b>Test Pupil 1</b> must score full marks in a practice set to unlock its challenge, like a real pupil (its latest try counts). <b>Test Pupils 2 to 5</b> can always enter an open challenge.</p>
       <div id="opens"></div></div>
     <div class="bar">
       <label>Test <select id="lvl"><option value="practice1">Practice set 1</option></select></label>
@@ -122,9 +123,10 @@ function lockPage() {
 }
 // Which tests can pupils start? One row per test with an Open / Close button.
 function renderOpen() {
-  $('opens').innerHTML = DATA.sets.map(s => {
+  $('opens').innerHTML = DATA.sets.filter(s => !s.linkedTo).map(s => {
     const o = DATA.open[s.key] && DATA.open[s.key].open;
-    return '<div class="orow"><span class="oname">' + esc(s.label) + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
+    const chal = DATA.sets.find(x => x.linkedTo === s.key);
+    return '<div class="orow"><span class="oname">' + esc(s.label) + (chal ? ' <span class="muted">and its challenge</span>' : '') + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
       '<span class="chip ' + (o ? 'on' : 'off') + '">' + (o ? 'Open' : 'Closed') + '</span>' +
       '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button></div>';
   }).join('');

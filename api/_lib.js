@@ -65,6 +65,20 @@ export async function saveResult(testId, rec) {
 // the marker too). Results saved before markers existed are found by reading the results once a minute.
 const normName = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
 const safeId = id => String(id).replace(/[^a-z0-9-]/gi, '');
+// Five test pupils per class, so a teacher can try the quiz exactly as a pupil sees it. They are NOT real pupils:
+// nothing is saved for them (no result, no marker), they can do every test again and again, and they can always enter a challenge.
+export const TEST_NAMES = [1, 2, 3, 4, 5].map(n => 'Test Pupil ' + n);
+export const isTestPupil = name => TEST_NAMES.some(t => normName(t) === normName(name));
+// Test Pupil 1 works like a real pupil for the challenge: it must score every mark in the practice set (its LATEST attempt counts) to unlock it.
+// Test Pupils 2-5 can always enter an open challenge.
+export const mustEarnChallenge = name => normName(name) === 'test pupil 1';
+export const challengeAlwaysOpen = name => isTestPupil(name) && !mustEarnChallenge(name);
+// Remember Test Pupil 1's latest practice result (one put), so `hasFullMarks` can find it.
+export async function rememberTestResult(quiz, klass, name, summary) {
+  await put(markerPath(quiz.id, klass, name), JSON.stringify({ ...summary, full: summary.score === summary.total }), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+}
+// Shown in the name search only when the teacher types "test" (4 letters or more), so real pupils never see them.
+export const testNames = q => { const s = normName(q); return s.length >= 4 ? TEST_NAMES.filter(t => normName(t).startsWith(s)) : []; };
 const attemptKey = (klass, name) => String(klass || '').toUpperCase() + '-' + createHash('sha1').update(normName(name)).digest('hex').slice(0, 24);
 const markerPath = (quizId, klass, name) => `attempts/${safeId(quizId)}/${attemptKey(klass, name)}.json`;
 function blobUrlFor(pathname) {
@@ -174,10 +188,14 @@ export async function getOpenState() {
     const v = saved[s.key];
     out[s.key] = v && typeof v.open === 'boolean' ? { open: v.open, at: v.at || 0 } : { open: s.openByDefault, at: 0 };
   }
+  // A challenge is linked to its practice set: it is open exactly when the practice set is open.
+  for (const s of SETS) if (s.linkedTo) out[s.key] = { ...out[s.linkedTo] };
   return out;
 }
 export async function setOpen(key, open) {
-  if (!SETS.some(s => s.key === key)) throw new Error('Unknown test.');
+  const set = SETS.find(s => s.key === key);
+  if (!set) throw new Error('Unknown test.');
+  if (set.linkedTo) key = set.linkedTo; // opening or closing a challenge changes its practice set (and so both)
   const state = await getOpenState();
   state[key] = { open: !!open, at: Date.now() };
   await put(OPEN_PATH, JSON.stringify(state), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
