@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     // A teacher's test pupil: mark it and show the score, but save no result and allow it every time.
     // Only Test Pupil 1 leaves one small note (its latest practice score) so the challenge unlock can be tried like a real pupil.
     if (isTestPupil(name)) {
-      const t = mark(QUIZ, body.answers);
+      const t = mark(QUIZ, body.answers, { klass, name });
       if (mustEarnChallenge(name) && QUIZ.next) await rememberTestResult(QUIZ, klass, name, { score: t.score, total: t.total, parts: t.parts });
       return res.status(200).json({ score: t.score, total: t.total, parts: t.parts, test: true });
     }
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       verified = names.some(n => n.replace(/\s+/g, ' ').trim().toLowerCase() === want);
     } catch { verified = null; } // name list unreachable: keep the answers, mark as unchecked
 
-    const m = mark(QUIZ, body.answers);
+    const m = mark(QUIZ, body.answers, { klass, name });
     const now = Date.now();
     const startedAt = Math.min(now, Number(body.startedAt) || now);
     const rec = {

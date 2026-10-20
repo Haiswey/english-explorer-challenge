@@ -7,7 +7,7 @@
 //   practice2  "Practice set 2"   37 marks. Spelling = type the WHOLE word on plain lines, no letter hints.
 //   challenge  "Challenge for set 1"  39 marks. Opens for pupils who scored every mark in Practice set 1.
 //   challenge2 "Challenge for set 2"  39 marks. Opens for pupils who scored every mark in Practice set 2.
-//   real       "Real quiz"        not written yet: it only has an open/close switch for now.
+//   real       "Real quiz"        60 marks, 5 parts (see REAL). Closed until the admin opens it.
 // Part kinds: choose (tap a word), letters (type letters into the gaps), word (type the whole word on lines),
 // gap (tap the word that fits the sentence), build (tap word tiles in order).
 
@@ -221,7 +221,110 @@ export const CHALLENGE2 = {
   ]
 };
 
-export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE, challenge2: CHALLENGE2 };
+export const REAL = {
+  // The REAL quiz (competition), built to Miss Irene's "Design and Marking Guide": 5 parts, 30 questions, 60 marks.
+  // Content: Super Minds 1 Units 5-9 (Teacher's Book word lists, incl. Unit 6 English for school: habitats and animals).
+  // Different words and sentences from the practice sets. Grammar (C) and Find the mistake (E) come from a small
+  // question bank (`vs`): each pupil gets ONE version of each, chosen from their class and name (`pickVariant`),
+  // so neighbours usually see different sentences. Ranking: total, then Grammar, then Word order, then Find the mistake, then time.
+  id: 'real-quiz-1', key: 'real', level: 'real',
+  title: 'English Explorer Challenge',
+  subtitle: 'Real quiz',
+  rank: ['C', 'D', 'E'],
+  parts: [
+    {
+      id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
+      help: 'Look at the picture. Tap the correct word.',
+      qs: [
+        { id: 'A1', pic: 'GOAT', alt: 'a goat', ans: 'goat', opts: ['goat', 'camel', 'kangaroo'] },
+        { id: 'A2', pic: 'STAIRS', alt: 'stairs', ans: 'stairs', opts: ['stairs', 'hall', 'cellar'] },
+        { id: 'A3', pic: 'SWEATER', alt: 'a sweater', ans: 'sweater', opts: ['sweater', 'jacket', 'skirt'] },
+        { id: 'A4', pic: 'KNEE', alt: 'a child pointing at a knee', ans: 'knee', opts: ['knee', 'toes', 'arm'] },
+        { id: 'A5', pic: 'PAINT', alt: 'a child painting a picture', ans: 'paint a picture', opts: ['paint a picture', 'listen to music', 'read a book'] },
+        { id: 'A6', pic: 'POLAR', alt: 'snow and ice', ans: 'polar region', opts: ['polar region', 'desert', 'jungle'] },
+        { id: 'A7', pic: 'PIANO', alt: 'a child playing the piano', ans: 'play the piano', opts: ['play the piano', 'ride my pony', 'go swimming'] },
+        { id: 'A8', pic: 'KANGAROO', alt: 'a kangaroo', ans: 'kangaroo', opts: ['kangaroo', 'cheetah', 'dolphin'] }
+      ]
+    },
+    {
+      // 4 whole words typed on lines (2 marks; 1 if same length with one wrong letter; a missing or extra letter = 0)
+      // and 2 missing-letter words (1 mark per letter), so weaker pupils can still score.
+      id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
+      help: 'Look at the picture. Spell the word.',
+      qs: [
+        { id: 'B1', pic: 'SKIRT', alt: 'a skirt', word: 'skirt' },
+        { id: 'B2', pic: 'GARDEN', alt: 'a garden', word: 'garden' },
+        { id: 'B3', pic: 'DOLPHIN', alt: 'a dolphin', word: 'dolphin' },
+        { id: 'B4', pic: 'LADYBIRD', alt: 'a ladybird', word: 'ladybird' },
+        { id: 'B5', kind: 'letters', pic: 'TROUSERS', alt: 'trousers', word: 'trousers', blanks: [3, 5] },
+        { id: 'B6', kind: 'letters', pic: 'CHEETAH', alt: 'a cheetah', word: 'cheetah', blanks: [2, 3] }
+      ]
+    },
+    {
+      // Each question has 2-3 versions of the same difficulty; a pupil sees one.
+      id: 'C', kind: 'gap', name: 'Grammar', marksEach: 2,
+      help: 'Tap the word that fits the sentence.',
+      qs: [
+        { id: 'C1', vs: [
+          { pic: '1F47E', alt: 'a monster', text: 'There ___ a monster in the cellar.', ans: 'is', opts: ['is', 'are', 'am'] },
+          { pic: '1F41A', alt: 'shells', text: 'There ___ two shells on the sand.', ans: 'are', opts: ['are', 'is', 'am'] }] },
+        { id: 'C2', vs: [
+          { pic: '1F47B', alt: 'a ghost', text: '___ there a ghost in the house?', ans: 'Is', opts: ['Is', 'Are', 'Am'] },
+          { pic: '1F9E6', alt: 'socks', text: '___ there any socks in the bag?', ans: 'Are', opts: ['Are', 'Is', 'Am'] }] },
+        { id: 'C3', vs: [
+          { pic: '1F9A9', alt: 'a child standing on one leg', text: 'He ___ stand on one leg.', ans: 'can', opts: ['can', "can't", 'cans'] },
+          { pic: 'PENGUIN', alt: 'a penguin', text: 'Penguins ___ fly.', ans: "can't", opts: ["can't", 'can', 'cans'] }] },
+        { id: 'C4', vs: [
+          { pic: '1F9E5', alt: 'a green jacket', text: 'He ___ wearing a green jacket.', ans: 'is', opts: ['is', 'are', 'am'] },
+          { pic: '1F456', alt: 'jeans', text: 'I ___ wearing my new jeans.', ans: 'am', opts: ['am', 'is', 'are'] }] },
+        { id: 'C5', vs: [
+          { pic: '1F45F', alt: 'shoes', text: 'Do you like ___ shoes?', ans: 'these', opts: ['these', 'this', 'a'] },
+          { pic: '1F9E2', alt: 'a cap', text: 'Do you like ___ cap?', ans: 'this', opts: ['this', 'these', 'an'] }] },
+        { id: 'C6', vs: [
+          { pic: 'LIZARD', alt: 'a lizard on a rock', text: 'The lizard is ___ the rock.', ans: 'on', opts: ['on', 'in', 'under'] },
+          { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'The polar bear is ___ the ice.', ans: 'on', opts: ['on', 'in', 'under'] }] },
+        { id: 'C7', vs: [
+          { pic: '1F4D6', alt: 'a book', text: "Where's the book? ___ in the bag.", ans: "It's", opts: ["It's", "They're", 'Is'] },
+          { pic: '1F41A', alt: 'shells', text: "Where are the shells? ___ on the sand.", ans: "They're", opts: ["They're", "It's", 'Are'] }] },
+        { id: 'C8', vs: [
+          { pic: '26BD', alt: 'a football', text: '___ you play football at the weekend?', ans: 'Do', opts: ['Do', 'Does', 'Are'] },
+          { pic: '1F6B2', alt: 'a bicycle', text: 'I ___ my bike on Saturdays.', ans: 'ride', opts: ['ride', 'rides', 'riding'] }] },
+        { id: 'C9', vs: [
+          { pic: '1F916', alt: 'a robot', text: 'The robot ___ two long arms.', ans: 'has', opts: ['has', 'have', 'is'] },
+          { pic: '1F980', alt: 'a crab', text: 'Crabs ___ two big claws.', ans: 'have', opts: ['have', 'has', 'is'] }] },
+        { id: 'C10', vs: [
+          { pic: 'CAMEL', alt: 'a camel', text: 'Camels ___ in the desert.', ans: 'live', opts: ['live', 'lives', 'living'] },
+          { pic: 'SHARK', alt: 'a shark', text: 'A shark ___ in the ocean.', ans: 'lives', opts: ['lives', 'live', 'living'] }] }
+      ]
+    },
+    {
+      // Word order: statements AND questions (so the part is not called "Sentence building").
+      // Every answer has ONE natural word order (marking compares tiles in a fixed order).
+      id: 'D', kind: 'build', name: 'Word order', marksEach: 3,
+      help: 'Tap the words in the correct order.',
+      qs: [
+        { id: 'D1', pic: '1F45F', alt: 'shoes', ans: ['Do', 'you', 'like', 'these', 'shoes', '?'] },
+        { id: 'D2', pic: '1F41A', alt: 'shells', ans: ['How', 'many', 'shells', 'are', 'there', '?'] },
+        { id: 'D3', pic: 'CAMEL', alt: 'a camel', ans: ['You', 'find', 'camels', 'in', 'the', 'desert', '.'] },
+        { id: 'D4', pic: 'DOLPHIN', alt: 'a dolphin', ans: ['Dolphins', 'can', 'swim', 'very', 'fast', '.'] },
+        { id: 'D5', pic: 'PAINT', alt: 'a child painting a picture', ans: ["Let's", 'paint', 'a', 'picture', '.'] }
+      ]
+    },
+    {
+      // Find and fix the mistake: 2 marks for tapping the wrong word, 3 more for writing the correct word.
+      id: 'E', kind: 'fix', name: 'Find the mistake', marksEach: 5, spotMarks: 2,
+      help: 'One word is wrong. Tap it, then write the correct word.',
+      qs: [
+        { id: 'E1', vs: [
+          { pic: 'SKIRT', alt: 'a blue skirt', words: ['She', 'are', 'wearing', 'a', 'blue', 'skirt', '.'], wrong: 1, fix: 'is' },
+          { pic: '1F916', alt: 'a robot', words: ['The', 'robot', 'have', 'two', 'arms', '.'], wrong: 2, fix: 'has' },
+          { pic: 'TIGER', alt: 'a tiger', words: ['Tigers', 'lives', 'in', 'the', 'jungle', '.'], wrong: 1, fix: 'live' }] }
+      ]
+    }
+  ]
+};
+
+export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE, challenge2: CHALLENGE2, real: REAL };
 // Each practice set has its own challenge: full marks in practice1 unlock `challenge`, full marks in practice2 unlock `challenge2`.
 // The tests the teacher can open or close for pupils, in the order shown. `real` has no questions yet.
 export const SETS = [
@@ -229,7 +332,7 @@ export const SETS = [
   { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
   { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true, linkedTo: 'practice1' },
   { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false, linkedTo: 'practice2' },
-  { key: 'real', label: 'Real quiz', ready: false, openByDefault: false }
+  { key: 'real', label: 'Real quiz', ready: true, openByDefault: false }
 ];
 // 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
 export const getQuiz = key => QUIZZES[key === 'practice' ? 'practice1' : key] || PRACTICE;
@@ -252,65 +355,96 @@ function oneLetterWrong(a, b) {
   return diff === 1;
 }
 
+// Question bank: which version of a question this pupil gets. The page uses the SAME formula, so it shows the version the server marks.
+const normWho = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+export function pickVariant(n, klass, name, qid) {
+  const str = String(klass || '').trim().toUpperCase() + '|' + normWho(name) + '|' + qid;
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0) % n;
+}
+const resolveQ = (q, who) => q.vs ? { id: q.id, kind: q.kind, ...q.vs[pickVariant(q.vs.length, who.klass, who.name, q.id)] } : q;
+const kindOf = (p, q) => q.kind || p.kind;
+
+function publicQ(k, q) {
+  if (k === 'choose') return { pic: q.pic, alt: q.alt, opts: q.opts };
+  if (k === 'gap') return { pic: q.pic, alt: q.alt, text: q.text, opts: q.opts };
+  if (k === 'word') return { pic: q.pic, alt: q.alt };
+  if (k === 'fix') return { pic: q.pic, alt: q.alt, words: q.words };
+  if (k === 'letters') {
+    const blanks = q.blanks || q.word.split('').map((_, i) => i);
+    return { pic: q.pic, alt: q.alt, len: q.word.length, blanks, shown: q.word.split('').map((c, i) => blanks.includes(i) ? '' : c) };
+  }
+  // Word tiles are sent in lower case so a capital letter does not show which word is first.
+  return { pic: q.pic, alt: q.alt, tiles: q.ans.map(w => w.toLowerCase()), caps: capsOf(q.ans) };
+}
+
 export function publicQuiz(quiz = PRACTICE) {
   return {
     id: quiz.id, key: quiz.key, level: quiz.level, next: quiz.next || '', title: quiz.title, subtitle: quiz.subtitle, total: totalOf(quiz),
     parts: quiz.parts.map(p => ({
       id: p.id, kind: p.kind, name: p.name, marksEach: p.marksEach, help: p.help,
       qs: p.qs.map(q => {
-        if (p.kind === 'choose') return { id: q.id, pic: q.pic, alt: q.alt, opts: q.opts };
-        if (p.kind === 'gap') return { id: q.id, pic: q.pic, alt: q.alt, text: q.text, opts: q.opts };
-        if (p.kind === 'word') return { id: q.id, pic: q.pic, alt: q.alt };
-        if (p.kind === 'letters') {
-          const blanks = q.blanks || q.word.split('').map((_, i) => i);
-          return { id: q.id, pic: q.pic, alt: q.alt, len: q.word.length, blanks,
-            shown: q.word.split('').map((c, i) => blanks.includes(i) ? '' : c) };
-        }
-        // Word tiles are sent in lower case so a capital letter does not show which word is first.
-        return { id: q.id, pic: q.pic, alt: q.alt, tiles: q.ans.map(w => w.toLowerCase()), caps: capsOf(q.ans) };
+        const k = kindOf(p, q);
+        const base = { id: q.id, ...(q.kind ? { kind: q.kind } : {}) };
+        return q.vs ? { ...base, vs: q.vs.map(v => publicQ(k, v)) } : { ...base, ...publicQ(k, q) };
       })
     }))
   };
 }
 
-export function mark(quiz, answers) {
+const joinWords = w => w.join(' ').replace(/ ([.?!])/g, '$1');
+
+// `who` = { klass, name }: needed to know which version of a bank question this pupil got.
+export function mark(quiz, answers, who = {}) {
   const a = answers && typeof answers === 'object' ? answers : {};
   const rows = []; const parts = {};
   for (const p of quiz.parts) {
     parts[p.id] = 0;
-    for (const q of p.qs) {
+    for (const q0 of p.qs) {
+      const q = resolveQ(q0, who), k = kindOf(p, q0);
       const given = a[q.id];
-      let got = 0, correct, shown;
-      if (p.kind === 'choose' || p.kind === 'gap') {
+      let got = 0, correct, shown, question;
+      if (k === 'choose' || k === 'gap') {
         shown = typeof given === 'string' ? given.slice(0, 40) : '';
         correct = q.ans;
-        got = shown === q.ans ? 1 : 0;
-      } else if (p.kind === 'word') {
+        got = shown === q.ans ? p.marksEach : 0;
+        if (k === 'gap') question = q.text;
+      } else if (k === 'word') {
         shown = typeof given === 'string' ? given.replace(/\s+/g, ' ').trim().slice(0, 40) : '';
         correct = q.word;
         const typed = shown.toLowerCase().replace(/\s+/g, '');
         got = typed === q.word ? p.marksEach : (oneLetterWrong(typed, q.word) ? 1 : 0);
-      } else if (p.kind === 'letters') {
+      } else if (k === 'letters') {
         const blanks = q.blanks || q.word.split('').map((_, i) => i);
         const letters = Array.isArray(given) ? given.map(x => String(x || '').trim().slice(0, 1).toLowerCase()) : [];
         shown = q.word.split('').map((c, i) => {
-          const k = blanks.indexOf(i);
-          return k < 0 ? c : (letters[k] || '_');
+          const j = blanks.indexOf(i);
+          return j < 0 ? c : (letters[j] || '_');
         }).join('');
         correct = q.word;
-        const right = blanks.filter((pos, k) => letters[k] === q.word[pos]).length;
+        const right = blanks.filter((pos, j) => letters[j] === q.word[pos]).length;
         if (p.exact) got = right === blanks.length ? p.marksEach : (right === blanks.length - 1 ? 1 : 0);
-        else got = right;
+        else got = Math.round(p.marksEach * right / blanks.length);
+      } else if (k === 'fix') {
+        const g = given && typeof given === 'object' ? given : {};
+        const w = Number.isInteger(g.w) ? g.w : -1;
+        const t = String(g.t || '').replace(/\s+/g, ' ').trim().slice(0, 30);
+        const spot = w === q.wrong;
+        got = spot ? (p.spotMarks || 2) + (t.toLowerCase() === q.fix.toLowerCase() ? p.marksEach - (p.spotMarks || 2) : 0) : 0;
+        question = joinWords(q.words);
+        shown = (w >= 0 && w < q.words.length ? 'tapped "' + q.words[w] + '"' : 'no word tapped') + (t ? ', wrote "' + t + '"' : '');
+        correct = '"' + q.words[q.wrong] + '" → "' + q.fix + '"';
       } else {
         const tiles = Array.isArray(given) ? given.map(x => String(x || '').slice(0, 20).toLowerCase()) : [];
         const n = q.ans.length;
         const right = q.ans.filter((w, i) => tiles[i] === w.toLowerCase()).length;
         got = (right === n && tiles.length === n) ? p.marksEach : Math.min(p.marksEach - 1, Math.floor(p.marksEach * right / n));
-        shown = showWords(tiles, capsOf(q.ans)).join(' ').replace(/ \./g, '.');
-        correct = q.ans.join(' ').replace(/ \./g, '.');
+        shown = joinWords(showWords(tiles, capsOf(q.ans)));
+        correct = joinWords(q.ans);
       }
       parts[p.id] += got;
-      rows.push({ q: q.id, part: p.id, given: shown, correct, got, max: p.marksEach });
+      rows.push({ q: q.id, part: p.id, given: shown, correct, got, max: p.marksEach, ...(question ? { question } : {}) });
     }
   }
   const score = Object.values(parts).reduce((s, x) => s + x, 0);
