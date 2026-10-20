@@ -112,15 +112,19 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Real quiz: real-quiz-1 (30 questions, 60 marks) - built to Miss Irene's "Design and Marking Guide" (Drive PDF)
 - Content from the Super Minds 1 Teacher's Book (Units 5-9 word lists + Unit 6 English for school: habitats and their animals). Different words from the practice sets.
-- A Vocabulary 8 x 1 (goat, stairs, sweater, knee, paint a picture, polar region, play the piano, kangaroo).
-- B Spelling 6 x 2: 4 typed whole words (skirt, garden, dolphin, ladybird; kind `word`) + 2 missing-letter words (tro_s_rs, ch__tah; per-question `kind: 'letters'`, 1 mark per letter).
-- C Grammar 10 x 2 (there is/are, Is/Are there, can/can't, is/am wearing, this/these, on, It's/They're, Do/ride, has/have, live/lives).
+- A Vocabulary 8 x 1: topic words from the book plus a few extra words inside the same topics (*): goat, stairs, sweater, shoulder*, paint a picture,
+  polar region, play the piano, sunglasses*.
+- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule): knee, skirt, garden, dolphin, cheetah, trousers.
+  No spelling word appears anywhere else in the quiz (option, sentence or tile), so nothing gives a spelling away.
+- C Grammar 10 x 2, from the Unit 5-9 grammar lessons and the mistakes Year 2 pupils often make: there is/are; short answers (Yes, there is / No, there aren't;
+  Yes, he is / No, she isn't; No, it can't / Yes, he can; Yes, I do); It's (one) / They're (more than one); this/these; am/is + wearing; can + plain verb;
+  Do you ...?; Let's + plain verb.
 - D "Word order" 5 x 3 (NOT called sentence building: it mixes statements and questions, e.g. "Do you like these shoes?", "How many shells are there?").
-- E "Find the mistake" 1 x 5 (kind `fix`): tap the wrong word (2 marks) then write the correct word (3 more).
+- E "Find the mistake" 1 x 5 (kind `fix`): tap the wrong word (2 marks) then write the correct word (3 more). Versions: These shoes is red / She are wearing a red sweater / I rides my bike on Sundays.
 - QUESTION BANK: C and E questions have versions (`vs`); each pupil gets one, chosen from class + name by `pickVariant` (FNV hash). The page uses the
   SAME formula (index.html `pickVariant`), so it shows the version the server marks. `mark(quiz, answers, { klass, name })` needs the pupil.
 - Ranking for the real quiz (`rank: ['C','D','E']`): total, then Grammar, then Word order, then Find the mistake, then time (practice sets keep D then B).
-- 14 pictures for it (GOAT, STAIRS, SWEATER, KNEE, PAINT, POLAR, PIANO, KANGAROO, SKIRT, DOLPHIN, GARDEN, LADYBIRD, TROUSERS, CHEETAH); page about 1.3 MB with 58 pictures.
+- Pictures made for it: GOAT, STAIRS, SWEATER, KNEE, PAINT, POLAR, PIANO, KANGAROO, SKIRT, DOLPHIN, GARDEN, TROUSERS, CHEETAH, SUNGLASSES; page about 1.3 MB with 58 pictures (no unused ones).
 
 ## Planned tests
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.
