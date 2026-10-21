@@ -65,7 +65,7 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
 </head>
 <body>
 <main class="wrap">
-  <div class="pagehead"><div><h1>English Explorer Challenge: results</h1><p class="muted" style="margin:4px 0 0">Ranked by total, then sentence building, then spelling, then the shorter time.</p></div>
+  <div class="pagehead"><div><h1>English Explorer Challenge: results</h1><p class="muted" id="rankby" style="margin:4px 0 0">Ranked by total, then sentence building, then spelling, then the shorter time.</p></div>
     <button class="btn ghost" id="lock" hidden aria-label="Lock: log out"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button></div>
   <section id="login" class="panel" style="max-width:420px;margin-top:20px">
     <label for="pin" class="head" style="font-size:22px;display:block;margin-bottom:8px">Teacher PIN</label>
@@ -100,7 +100,10 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let DATA = null, PIN = sessionStorage.getItem('kkx-pin') || '';
-const mmss = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+// A time over 3 hours (or missing) is not real: it means the pupil's device clock was wrong. Show a dash and rank it last among equal scores.
+const goodSec = s => typeof s === 'number' && s >= 0 && s <= 10800;
+const secKey = s => goodSec(s) ? s : Infinity;
+const mmss = s => goodSec(s) ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') : '–';
 const when = t => new Date(t).toLocaleString('en-MY', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const PARTNAME = { A: 'Vocabulary', B: 'Spelling', D: 'Sentence building' };
 
@@ -164,10 +167,17 @@ function tagAttempts(list) {
     const k = r.klass + '|' + String(r.name).replace(/\s+/g, ' ').trim().toLowerCase(); seen[k] = (seen[k] || 0) + 1; return { ...r, attempt: seen[k] };
   });
 }
-const cmp = (a, b) => (b.score - a.score) || ((b.parts.D || 0) - (a.parts.D || 0)) || ((b.parts.B || 0) - (a.parts.B || 0)) || (a.seconds - b.seconds);
-const same = (a, b) => a.score === b.score && (a.parts.D || 0) === (b.parts.D || 0) && (a.parts.B || 0) === (b.parts.B || 0) && a.seconds === b.seconds;
+// Tie-breakers come from the test: practice sets and challenges use Sentence building then Spelling; the real quiz uses Grammar, Word order, Find the mistake.
+const rankParts = () => (DATA && DATA.rank) || ['D', 'B'];
+const cmp = (a, b) => (b.score - a.score) || rankParts().reduce((d, id) => d || ((b.parts[id] || 0) - (a.parts[id] || 0)), 0) || (secKey(a.seconds) === secKey(b.seconds) ? 0 : secKey(a.seconds) < secKey(b.seconds) ? -1 : 1);
+const same = (a, b) => a.score === b.score && rankParts().every(id => (a.parts[id] || 0) === (b.parts[id] || 0)) && secKey(a.seconds) === secKey(b.seconds);
 let SHOWN = [];
+function rankText() {
+  const names = rankParts().map(id => ((DATA.parts.find(p => p.id === id) || {}).name || id).toLowerCase());
+  $('rankby').textContent = 'Ranked by total, then ' + names.join(', then ') + ', then the shorter time.';
+}
 function render() {
+  rankText();
   $('thead').innerHTML = '<th class="num">Rank</th><th class="nm">Name</th><th>Class</th><th class="num">Total</th>' + DATA.parts.map(p => '<th class="num part"><span class="hn">' + esc(p.name) + '</span><span class="hm">/' + p.max + '</span></th>').join('') + '<th class="num">Time</th><th>Submitted</th>';
   const cls = $('cls').value, q = $('find').value.trim().toLowerCase(), showRe = $('retakes').checked;
   let list = tagAttempts(DATA.results).filter(r => !cls || r.klass === cls);
@@ -196,7 +206,7 @@ const isAdmin = () => DATA && DATA.role === 'admin';
 function detail(r) {
   $('dlg').innerHTML = '<h2 class="head" style="font-size:24px;color:var(--sea)">' + esc(r.name) + ', ' + esc(r.klass) + '</h2><p class="muted" style="margin:4px 0 12px">' + r.score + ' / ' + r.total + ' marks, ' + mmss(r.seconds) + ', ' + when(r.submittedAt) + (r.attempt > 1 ? ', retake ' + r.attempt : '') + '</p>' +
     '<div class="scroll"><table class="ans" style="min-width:0"><thead><tr><th>Q</th><th>Pupil\u2019s answer</th><th>Correct answer</th><th class="num">Marks</th></tr></thead><tbody>' +
-    r.rows.map(x => '<tr><td>' + esc(x.q) + '</td><td>' + esc(x.given || '(no answer)') + '</td><td>' + esc(x.correct) + '</td><td class="num"><span class="got' + (x.got ? '' : ' zero') + '">' + x.got + '</span> / ' + x.max + '</td></tr>').join('') +
+    r.rows.map(x => '<tr><td>' + esc(x.q) + '</td><td>' + (x.question ? '<span class="muted">' + esc(x.question) + '</span><br>' : '') + esc(x.given || '(no answer)') + '</td><td>' + esc(x.correct) + '</td><td class="num"><span class="got' + (x.got ? '' : ' zero') + '">' + x.got + '</span> / ' + x.max + '</td></tr>').join('') +
     '</tbody></table></div><p class="err" id="derr"></p><div class="actions">' + (isAdmin() ? '<button class="btn danger" id="del">Delete this attempt</button>' : '') + '<button class="btn" id="close">Close</button></div>';
   $('dlg').showModal(); $('close').onclick = () => $('dlg').close();
   if (isAdmin()) $('del').onclick = async () => {
@@ -211,7 +221,7 @@ function detail(r) {
 }
 function csv() {
   const head = ['Rank', 'Name', 'Class', 'Attempt', 'Total'].concat(DATA.parts.map(p => p.name), ['Seconds', 'Submitted']);
-  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [r.seconds, new Date(r.submittedAt).toISOString()])));
+  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [goodSec(r.seconds) ? r.seconds : '', new Date(r.submittedAt).toISOString()])));
   const text = lines.map(l => l.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv' }));
   a.download = 'english-explorer-' + $('lvl').value + '-' + ($('cls').value || 'year2') + '.csv'; a.click();

@@ -46,10 +46,11 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   a long name wraps to a second line; "name not on list" and "retake" tags sit on a second line under the name; screens
   900 px wide or less show each pupil as a small card instead of a table row.
   Only each pupil's first attempt is ranked; retakes are shown separately.
+  Time: the pupil's device clock measures it (start tap to submit). Over 3 hours means the device clock was wrong, so the server saves `seconds: null` and the teacher page shows a dash and ranks it last among equal scores (older records with huge times are treated the same way).
 
 ## Tests and the open/close switches
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
-  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (switch only, no questions yet).
+  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (id `real-quiz-1`, "Real quiz", the competition; CLOSED until the admin opens it), `challenge3` (id `challenge-real-1`, "Challenge for the real quiz").
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
 - Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed, real closed.
   A challenge is LINKED to its practice set (`linkedTo` in `SETS`): it is open exactly when its practice set is open, and opening or closing either one
@@ -87,8 +88,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Rules from Miss Irene
 - Images for teaching tools must be EMBEDDED in the files (inline SVG or base64 data URIs), never linked from
-  external URLs. Done: the 44 quiz pictures (children's picture-book style, made with Canva AI, credited on the home screen) are
-  embedded as base64 WebP (480x480) in the `PICS` map in `public/index.html` (page is about 950 KB). A new picture
+  external URLs. Done: the 57 quiz pictures (children's picture-book style, made with Canva AI, credited on the home screen) are
+  embedded as base64 WebP (480x480) in the `PICS` map in `public/index.html` (page is about 1.25 MB). A new picture
   code in `api/_quiz.js` must be added to `PICS` (otherwise the plain emoji shows instead). To make a new one: Canva
   `generate-image` with one style line, then place it on a page of a Canva design and `export-design` as PNG.
   Fonts (Andika, Baloo 2; SIL OFL) are subset woff2 files in `public/fonts/`, loaded from `style.css`. Nothing is loaded from outside sites.
@@ -109,10 +110,30 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   in `public/index.html`. The teacher page has a Test selector listing every test with questions.
 - The practice screen shows the set name (no "Mock test" wording for pupils).
 
+## Real quiz: real-quiz-1 (30 questions, 60 marks) - built to Miss Irene's "Design and Marking Guide" (Drive PDF)
+- Content from the Super Minds 1 Teacher's Book (Units 5-9 word lists + Unit 6 English for school: habitats and their animals). Different words from the practice sets.
+- A Vocabulary 8 x 1: topic words from the book plus a few extra words inside the same topics (*): goat, stairs, sweater, shoulder*, paint a picture,
+  polar region, play the piano, sunglasses*.
+- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule), her chosen words: tongue, gloves, kitchen, dolphin, cheetah, blouse.
+  No spelling word appears anywhere else in the quiz (option, sentence or tile), so nothing gives a spelling away.
+- C Grammar 10 x 2, from the Unit 5-9 grammar lessons and the mistakes Year 2 pupils often make: there is/are; short answers (Yes, there is / No, there aren't;
+  Yes, he is / No, she isn't; No, it can't / Yes, he can; Yes, I do); It's (one) / They're (more than one); this/these; am/is + wearing; can + plain verb;
+  Do you ...?; Let's + plain verb.
+- D "Word order" 5 x 3 (NOT called sentence building: it mixes statements and questions, e.g. "Do you like these shoes?", "How many shells are there?").
+- E "Find the mistake" 1 x 5 (kind `fix`): tap the wrong word (2 marks) then write the correct word (3 more). Versions: These shoes is red / She are wearing a red sweater / I rides my bike on Sundays.
+- QUESTION BANK: C and E questions have versions (`vs`); each pupil gets one, chosen from class + name by `pickVariant` (FNV hash). The page uses the
+  SAME formula (index.html `pickVariant`), so it shows the version the server marks. `mark(quiz, answers, { klass, name })` needs the pupil.
+- Ranking for the real quiz (`rank: ['C','D','E']`): total, then Grammar, then Word order, then Find the mistake, then time (practice sets keep D then B).
+- Pictures made for it: GOAT, STAIRS, SWEATER, PAINT, POLAR, PIANO, KANGAROO, DOLPHIN, CHEETAH, SUNGLASSES, TONGUE, GLOVES, BLOUSE; page about 1.25 MB with 57 pictures (no unused ones).
+- It has its OWN challenge: `challenge3` (id `challenge-real-1`, "Challenge for the real quiz"), only for pupils with 60/60 in the real quiz (`after: 'real'`, `next` on REAL),
+  linked to the real quiz's switch (opens/closes with it). Same 5 parts, harder, 28 questions, 60 marks: A Vocabulary 7 x 1 (close distractors: ocean/lake, jungle/forest,
+  kangaroo/koala, bedroom/living room ...), B Spelling 6 x 2 typed (penguin, bathroom, sweater, mountains, jellyfish, sandcastle), C Grammar 8 x 2 with versions,
+  D Word order 5 x 3, E Find the mistake 2 x 5 with versions. Ranking C, D, E like the real quiz. The page offers a challenge after ANY test that has `next`.
+
 ## Planned tests
 1. Mock test 1, easy (current): Sections A, B, D, 35 marks.
 2. Mock test 2, medium: add Section C Grammar (Practice set 2 already types the whole spelling word).
-3. Final competition: full 60-mark paper, Sections A-E, with a question bank so pupils get different versions.
+3. Final competition: DONE as the Real quiz (above).
 
 - Check singular/plural against the picture (shells, socks, shoes and jeans show more than one; a monster, a crab and a boat show one). Picture counts must match the words.
 

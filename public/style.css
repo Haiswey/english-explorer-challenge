@@ -125,6 +125,12 @@ img { max-width: 100%; }
 .sentence .tile { height: 52px; font-size: 24px; min-width: 40px; }
 .tile.placed { background: var(--card); color: var(--ink); border: 3px solid var(--sea); box-shadow: none; }
 .tiles .tile:disabled { visibility: hidden; }
+/* Find the mistake: the sentence as tappable words */
+.fixline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; margin: 0 0 16px; }
+.fixw { font-size: 26px; font-weight: 700; padding: 6px 12px; min-height: 52px; border-radius: 12px; border: 3px solid var(--line); background: var(--card); color: var(--ink); }
+.fixw[aria-pressed="true"] { border-color: var(--coral); background: var(--coral-soft); text-decoration: line-through; text-decoration-color: var(--coral); }
+.fixp { font-size: 26px; font-weight: 700; }
+.fixlab { display: block; text-align: center; font-size: 19px; margin: 4px 0 6px; }
 
 .review { display: flex; flex-direction: column; gap: 16px; }
 .review h3 { font-size: 20px; margin-bottom: 8px; }
