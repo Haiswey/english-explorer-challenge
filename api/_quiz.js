@@ -231,7 +231,7 @@ export const REAL = {
   // chosen from their class and name (`pickVariant`), so neighbours usually see different sentences.
   // No spelling word is shown anywhere else in the quiz (no option, sentence or tile), so nothing gives a spelling away.
   // Ranking: total, then Grammar, then Word order, then Find the mistake, then time.
-  id: 'real-quiz-1', key: 'real', level: 'real',
+  id: 'real-quiz-1', key: 'real', level: 'real', next: 'challenge3',
   title: 'English Explorer Challenge',
   subtitle: 'Real quiz',
   rank: ['C', 'D', 'E'],
@@ -252,16 +252,16 @@ export const REAL = {
     },
     {
       // Every word is typed in full on lines (2 marks; 1 if the length is right and exactly one letter is wrong; a missing or extra letter = 0).
-      // Easy to harder: knee (silent k), skirt, garden, dolphin, cheetah (ee), trousers.
+      // Miss Irene's choice of words: tongue, gloves, kitchen, dolphin, cheetah (ee), blouse.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
       help: 'Look at the picture. Type the word on the lines.',
       qs: [
-        { id: 'B1', pic: 'KNEE', alt: 'a child pointing at a knee', word: 'knee' },
-        { id: 'B2', pic: 'SKIRT', alt: 'a skirt', word: 'skirt' },
-        { id: 'B3', pic: 'GARDEN', alt: 'a garden', word: 'garden' },
+        { id: 'B1', pic: 'TONGUE', alt: 'a child sticking out a tongue', word: 'tongue' },
+        { id: 'B2', pic: 'GLOVES', alt: 'gloves', word: 'gloves' },
+        { id: 'B3', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
         { id: 'B4', pic: 'DOLPHIN', alt: 'a dolphin', word: 'dolphin' },
         { id: 'B5', pic: 'CHEETAH', alt: 'a cheetah', word: 'cheetah' },
-        { id: 'B6', pic: 'TROUSERS', alt: 'trousers', word: 'trousers' }
+        { id: 'B6', pic: 'BLOUSE', alt: 'a blouse', word: 'blouse' }
       ]
     },
     {
@@ -328,7 +328,98 @@ export const REAL = {
   ]
 };
 
-export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE, challenge2: CHALLENGE2, real: REAL };
+export const CHALLENGE3 = {
+  // The challenge for the REAL quiz: only for pupils who scored every mark (60/60) in the real quiz. Opens and closes with it.
+  // Same 5 parts as the real quiz, harder: closer distractors, longer sentences, two Find the mistake questions. 28 questions, 60 marks.
+  // Different words and sentences from the real quiz; no spelling word appears anywhere else in it.
+  id: 'challenge-real-1', key: 'challenge3', level: 'challenge', after: 'real',
+  title: 'English Explorer Challenge',
+  subtitle: 'Challenge for the real quiz',
+  rank: ['C', 'D', 'E'],
+  parts: [
+    {
+      id: 'A', kind: 'choose', name: 'Vocabulary', marksEach: 1,
+      help: 'Look at the picture. Tap the correct word.',
+      qs: [
+        { id: 'A1', pic: 'OCEAN', alt: 'the ocean', ans: 'ocean', opts: ['ocean', 'lake', 'sand'] },
+        { id: 'A2', pic: 'JUNGLE', alt: 'a jungle', ans: 'jungle', opts: ['jungle', 'forest', 'garden'] },
+        { id: 'A3', pic: '1F3A3', alt: 'a fishing rod and a fish', ans: 'catch a fish', opts: ['catch a fish', 'eat a fish', 'look for shells'] },
+        { id: 'A4', pic: 'KANGAROO', alt: 'a kangaroo', ans: 'kangaroo', opts: ['kangaroo', 'koala', 'cheetah'] },
+        { id: 'A5', pic: 'SHOULDER', alt: 'a child touching a shoulder', ans: 'shoulder', opts: ['shoulder', 'knee', 'neck'] },
+        { id: 'A6', pic: '1F6CF', alt: 'a bed', ans: 'bedroom', opts: ['bedroom', 'living room', 'dining room'] },
+        { id: 'A7', pic: '1F366', alt: 'an ice cream', ans: 'eat ice cream', opts: ['eat ice cream', 'play in the sun', 'take a photo'] }
+      ]
+    },
+    {
+      id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
+      help: 'Look at the picture. Type the word on the lines.',
+      qs: [
+        { id: 'B1', pic: 'PENGUIN', alt: 'a penguin', word: 'penguin' },
+        { id: 'B2', pic: '1F6C1', alt: 'a bathroom', word: 'bathroom' },
+        { id: 'B3', pic: 'SWEATER', alt: 'a sweater', word: 'sweater' },
+        { id: 'B4', pic: 'MOUNTAINS', alt: 'mountains', word: 'mountains' },
+        { id: 'B5', pic: 'JELLYFISH', alt: 'a jellyfish', word: 'jellyfish' },
+        { id: 'B6', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', word: 'sandcastle' }
+      ]
+    },
+    {
+      id: 'C', kind: 'gap', name: 'Grammar', marksEach: 2,
+      help: 'Tap the word that fits the sentence.',
+      qs: [
+        { id: 'C1', vs: [ // How many ...? There are ...
+          { pic: '1F41A', alt: 'two shells', text: 'How many shells are there? There ___ two.', ans: 'are', opts: ['are', 'is', 'have'] },
+          { pic: '1F9E6', alt: 'two socks', text: 'How many socks are there? There ___ two.', ans: 'are', opts: ['are', 'is', 'have'] }] },
+        { id: 'C2', vs: [ // Is there / Are there - short answers
+          { pic: 'OCEAN', alt: 'the ocean', text: 'Are there any sharks in the ocean? Yes, there ___.', ans: 'are', opts: ['are', 'is', "aren't"] },
+          { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'Is there a polar bear on the ice? Yes, there ___.', ans: 'is', opts: ['is', 'are', "isn't"] }] },
+        { id: 'C3', vs: [ // isn't wearing - look at the colour in the picture
+          { pic: '1F9E5', alt: 'a green jacket', text: 'He ___ wearing a red jacket.', ans: "isn't", opts: ["isn't", "aren't", "don't"] },
+          { pic: '1F456', alt: 'blue jeans', text: 'She ___ wearing green jeans.', ans: "isn't", opts: ["isn't", "aren't", "doesn't"] }] },
+        { id: 'C4', vs: [ // Do you like ...? short answers
+          { pic: '1F456', alt: 'jeans', text: 'Do you like these jeans? No, I ___.', ans: "don't", opts: ["don't", "doesn't", "isn't"] },
+          { pic: '1F9E2', alt: 'a cap', text: 'Do you like this cap? Yes, I ___.', ans: 'do', opts: ['do', 'am', 'does'] }] },
+        { id: 'C5', vs: [ // It's / They're
+          { pic: '1F45F', alt: 'shoes', text: 'Where are my shoes? ___ under the bed.', ans: "They're", opts: ["They're", "It's", 'There'] },
+          { pic: '1F4F7', alt: 'a camera', text: "Where's my camera? ___ on the table.", ans: "It's", opts: ["It's", "They're", 'Its'] }] },
+        { id: 'C6', vs: [ // can't + plain verb (world knowledge)
+          { pic: 'SNAKE', alt: 'a snake', text: 'A snake ___ walk.', ans: "can't", opts: ["can't", 'can', "doesn't"] },
+          { pic: 'SHARK', alt: 'a shark', text: 'A shark ___ fly.', ans: "can't", opts: ["can't", 'can', "isn't"] }] },
+        { id: 'C7', vs: [ // present simple with days (Unit 5)
+          { pic: '1F3B8', alt: 'a guitar', text: 'I ___ the guitar on Fridays.', ans: 'play', opts: ['play', 'plays', 'playing'] },
+          { pic: '1F6B2', alt: 'a bicycle', text: 'We ___ our bikes on Sundays.', ans: 'ride', opts: ['ride', 'rides', 'riding'] }] },
+        { id: 'C8', vs: [ // in / on / under
+          { pic: 'LIZARD', alt: 'a lizard on a rock', text: 'The lizard is ___ the rock.', ans: 'on', opts: ['on', 'in', 'under'] },
+          { pic: '1F47E', alt: 'a monster in the cellar', text: 'The monster is ___ the cellar.', ans: 'in', opts: ['in', 'on', 'under'] }] }
+      ]
+    },
+    {
+      id: 'D', kind: 'build', name: 'Word order', marksEach: 3,
+      help: 'Tap the words in the correct order.',
+      qs: [
+        { id: 'D1', pic: '1F3B8', alt: 'a guitar', ans: ['Do', 'you', 'like', 'this', 'guitar', '?'] },
+        { id: 'D2', pic: 'PARROT', alt: 'a parrot', ans: ['You', 'find', 'parrots', 'in', 'the', 'jungle', '.'] },
+        { id: 'D3', pic: '1F47B', alt: 'a ghost', ans: ['There', 'is', 'a', 'ghost', 'on', 'the', 'stairs', '.'] },
+        { id: 'D4', pic: '1F9A9', alt: 'a child standing on one leg', ans: ['He', 'can', 'stand', 'on', 'one', 'leg', '.'] },
+        { id: 'D5', pic: '1F9E2', alt: 'a blue cap', ans: ["Where's", 'my', 'blue', 'cap', '?'] }
+      ]
+    },
+    {
+      id: 'E', kind: 'fix', name: 'Find the mistake', marksEach: 5, spotMarks: 2,
+      help: 'One word is wrong. Tap it, then write the correct word.',
+      qs: [
+        { id: 'E1', vs: [
+          { pic: '1F9E5', alt: 'a green jacket', words: ['He', 'are', 'wearing', 'a', 'green', 'jacket', '.'], wrong: 1, fix: 'is' },
+          { pic: '1F456', alt: 'jeans', words: ['Do', 'you', 'like', 'this', 'jeans', '?'], wrong: 3, fix: 'these' },
+          { pic: 'CAMEL', alt: 'a camel', words: ['Camels', 'lives', 'in', 'the', 'desert', '.'], wrong: 1, fix: 'live' }] },
+        { id: 'E2', vs: [
+          { pic: 'TIGER', alt: 'a tiger', words: ['A', 'tiger', 'can', 'runs', 'very', 'fast', '.'], wrong: 3, fix: 'run' },
+          { pic: '26BD', alt: 'a football', words: ['I', 'plays', 'football', 'on', 'Saturdays', '.'], wrong: 1, fix: 'play' }] }
+      ]
+    }
+  ]
+};
+
+export const QUIZZES = { practice1: PRACTICE, practice2: PRACTICE2, challenge: CHALLENGE, challenge2: CHALLENGE2, real: REAL, challenge3: CHALLENGE3 };
 // Each practice set has its own challenge: full marks in practice1 unlock `challenge`, full marks in practice2 unlock `challenge2`.
 // The tests the teacher can open or close for pupils, in the order shown. `real` has no questions yet.
 export const SETS = [
@@ -336,7 +427,8 @@ export const SETS = [
   { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
   { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true, linkedTo: 'practice1' },
   { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false, linkedTo: 'practice2' },
-  { key: 'real', label: 'Real quiz', ready: true, openByDefault: false }
+  { key: 'real', label: 'Real quiz', ready: true, openByDefault: false },
+  { key: 'challenge3', label: 'Challenge for the real quiz', ready: true, openByDefault: false, linkedTo: 'real' }
 ];
 // 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
 export const getQuiz = key => QUIZZES[key === 'practice' ? 'practice1' : key] || PRACTICE;
