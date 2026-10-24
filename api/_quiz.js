@@ -83,7 +83,7 @@ export const PRACTICE2 = {
       // a missing or extra letter gets 0.
       // shoulder is the one extra word: same theme as Unit 8 (the body), a little beyond the spelling list.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
-      help: 'Look at the picture. Type the word on the lines.',
+      help: 'Look at the picture. Type the word on the line.',
       qs: [
         { id: 'B1', pic: '1F9E5', alt: 'a jacket', word: 'jacket' },
         { id: 'B2', pic: '1F3B8', alt: 'a guitar', word: 'guitar' },
@@ -254,7 +254,7 @@ export const REAL = {
       // Every word is typed in full on lines (2 marks; 1 if the length is right and exactly one letter is wrong; a missing or extra letter = 0).
       // Miss Irene's choice of words: tongue, gloves, kitchen, dolphin, cheetah (ee), blouse.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
-      help: 'Look at the picture. Type the word on the lines.',
+      help: 'Look at the picture. Type the word on the line.',
       qs: [
         { id: 'B1', pic: 'TONGUE', alt: 'a child sticking out a tongue', word: 'tongue' },
         { id: 'B2', pic: 'GLOVES', alt: 'gloves', word: 'gloves' },
@@ -352,7 +352,7 @@ export const CHALLENGE3 = {
     },
     {
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
-      help: 'Look at the picture. Type the word on the lines.',
+      help: 'Look at the picture. Type the word on the line.',
       qs: [
         { id: 'B1', pic: 'PENGUIN', alt: 'a penguin', word: 'penguin' },
         { id: 'B2', pic: '1F6C1', alt: 'a bathroom', word: 'bathroom' },

@@ -73,7 +73,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 ## Practice set 2: practice-set-2 (20 questions, 37 marks)
 - Words come from the school's "Year 2 Spelling List 2026" (Miss Irene's docx; Topics 5-9 plus habitats and animals). Different words and sentences from Practice set 1.
   A Vocabulary 8 x 1 (take a photo, make a sandcastle, T-shirt, desert, jungle, ocean, penguin, robot);
-  B Spelling: picture and ruled lines only, type the WHOLE word, 7 x 2 (kind `word`; 1 mark if same length with exactly one wrong letter; a missing or extra letter = 0):
+  B Spelling: picture and ONE writing line only (four ruled lines were too narrow for the letters), type the WHOLE word, 7 x 2 (kind `word`; 1 mark if same length with exactly one wrong letter; a missing or extra letter = 0):
   jacket, guitar, camel, snake, parrot, shark, shoulder* (* = the one extra word, beyond the list but inside the Unit 8 body theme; easy to change);
   D Sentence building 5 x 3 (bike; "Tigers live in the jungle"; "Camels live in the desert" (habitat sentences use the plural, as in Miss Irene's list style); robot has two arms; sandcastle).
   Habitat and animal pictures (DESERT, JUNGLE, OCEAN, MOUNTAINS, PENGUIN, CAMEL, TIGER, SNAKE, SHARK, POLARBEAR, PARROT, JELLYFISH, LIZARD) and SHOULDER are in `PICS`.
