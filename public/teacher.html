@@ -34,6 +34,7 @@ tbody tr:hover { background: var(--sky); }
 .chip.on { background: var(--sea-soft); color: var(--sea); }
 .chip.off { background: var(--coral-soft); color: var(--coral); }
 .orow .btn { min-height: 40px; font-size: 16px; padding: 4px 18px; }
+.orow .btn.busy:disabled { opacity: 1; cursor: progress; } /* the pressed button stays clear while it saves */
 .tags { margin-top: 3px; }
 .tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-right: 6px; display: inline-block; }
 /* Narrow screens (phones, small tablets): each pupil is a small card, no sideways scrolling */
@@ -79,7 +80,7 @@ dialog::backdrop { background: rgba(10, 30, 45, .45); }
       <p style="margin:0 0 8px" id="nowopen"></p>
       <p class="muted" style="margin:0;font-size:15px"><b>Try it yourself:</b> on the pupil page choose any class, type <b>test</b> and tap <b>Test Pupil 1</b> to <b>5</b>. Test pupils can do every test again and again, and their scores are not shown here. <b>Test Pupil 1</b> must score full marks in a practice set to unlock its challenge, like a real pupil (its latest try counts). <b>Test Pupils 2 to 5</b> can always enter an open challenge.</p>
       <details id="adminopen" hidden style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">Admin: open or close tests</summary>
-        <p class="muted" style="margin:6px 0 4px;font-size:15px">Pupils can only start a test that is open. If you close a test, a pupil who already started can still hand in.</p>
+        <p class="muted" style="margin:6px 0 4px;font-size:15px">Only one test can be open at a time: opening a test closes the others. Pupils can only start the open test. If a test is closed, a pupil who already started can still hand in.</p>
         <div id="opens"></div></details></div>
     <div class="bar">
       <label>Test <select id="lvl"><option value="practice1">Practice set 1</option></select></label>
@@ -139,7 +140,11 @@ function renderOpen() {
   $('nowopen').innerHTML = going.length ? '<b>Open for pupils now:</b> ' + going.join('; ') + '.' : '<b>No test is open for pupils right now.</b>';
   $('adminopen').hidden = !isAdmin();
   $('opens').querySelectorAll('[data-open]').forEach(b => b.onclick = async () => {
-    b.disabled = true;
+    const opening = b.dataset.to === '1', set = DATA.sets.find(s => s.key === b.dataset.open);
+    const others = DATA.sets.filter(s => !s.linkedTo && s.key !== b.dataset.open && DATA.open[s.key] && DATA.open[s.key].open).map(s => s.label);
+    if (opening && others.length && !confirm('Open ' + set.label + '?\n\nOnly one test can be open at a time, so this closes: ' + others.join(', ') + '.')) return;
+    $('opens').querySelectorAll('[data-open]').forEach(x => x.disabled = true); // one change at a time
+    b.textContent = opening ? 'Opening…' : 'Closing…'; b.classList.add('busy');
     try {
       const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, action: 'setOpen', set: b.dataset.open, open: b.dataset.to === '1' }) });
       const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not changed.');
