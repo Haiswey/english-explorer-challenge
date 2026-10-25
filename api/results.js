@@ -10,8 +10,9 @@ export default async function handler(req, res) {
     if (!role) return res.status(401).json({ error: 'That PIN is not right. Use the teacher PIN from the spelling app.' });
     if (body.action === 'setOpen') { // only the admin can open or close a test for pupils
       if (role !== 'admin') return res.status(403).json({ error: 'Only the admin can open or close tests.' });
-      try { await setOpen(String(body.set), body.open === true); } catch (e) { return res.status(400).json({ error: e.message }); }
-      return res.status(200).json({ open: await getOpenState() });
+      let open;
+      try { open = await setOpen(String(body.set), body.open === true); } catch (e) { return res.status(400).json({ error: e.message }); }
+      return res.status(200).json({ open }); // the state just saved (reading it back would only add a wait)
     }
     if (body.action === 'delete') {
       if (role !== 'admin') return res.status(403).json({ error: 'Only the admin can delete scores.' });

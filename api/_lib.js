@@ -37,10 +37,16 @@ export async function rosterSearch(klass, q) {
 // Same teacher PIN as the spelling app (checked by the spelling app itself), or QUIZ_PIN if set in this project.
 // Returns 'admin' (the spelling app's admin PIN, or QUIZ_PIN), 'teacher' (any teacher PIN) or null (wrong PIN).
 // Teachers may look at scores; only the admin may delete them.
+// A PIN the spelling app accepted is remembered for 10 minutes on this server (only its hash is kept), so every Open,
+// Close or Delete press does not ask the spelling app again: that call is slow and costs the spelling app storage reads.
+const pinCache = new Map();
 export async function checkPin(pin) {
   pin = String(pin || '').trim();
   if (!pin) return null;
   if (process.env.QUIZ_PIN && pin === process.env.QUIZ_PIN) return 'admin';
+  const h = createHash('sha256').update('kkx-pin|' + pin).digest('hex');
+  const hit = pinCache.get(h);
+  if (hit && Date.now() - hit.at < 10 * 60 * 1000) return hit.role;
   try {
     const r = await fetch(`${SPELL}/api/admin`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -48,7 +54,9 @@ export async function checkPin(pin) {
     });
     if (r.status !== 200) return null;
     const j = await r.json().catch(() => ({}));
-    return j && j.me && j.me.role === 'admin' ? 'admin' : 'teacher';
+    const role = j && j.me && j.me.role === 'admin' ? 'admin' : 'teacher';
+    pinCache.set(h, { role, at: Date.now() });
+    return role;
   } catch { return null; }
 }
 
@@ -196,8 +204,12 @@ export async function setOpen(key, open) {
   const set = SETS.find(s => s.key === key);
   if (!set) throw new Error('Unknown test.');
   if (set.linkedTo) key = set.linkedTo; // opening or closing a challenge changes its practice set (and so both)
-  const state = await getOpenState();
-  state[key] = { open: !!open, at: Date.now() };
+  const state = await getOpenState(), now = Date.now();
+  // Only ONE test is open at a time (a practice set or the real quiz, with its challenge): opening one closes the others.
+  // A pupil who started a test that is closed this way can still hand it in (see mayHandIn).
+  if (open) for (const s of SETS) if (!s.linkedTo && s.key !== key && state[s.key].open) state[s.key] = { open: false, at: now };
+  state[key] = { open: !!open, at: now };
+  for (const s of SETS) if (s.linkedTo) state[s.key] = { ...state[s.linkedTo] };
   await put(OPEN_PATH, JSON.stringify(state), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
   return state;
 }
