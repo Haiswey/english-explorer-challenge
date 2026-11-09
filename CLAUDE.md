@@ -65,6 +65,15 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   Pupils only see open tests (`/api/quiz` lists them; one open test goes straight to class choice, several show "Choose your test").
   Closed test: start gets 403 `{closed:true}`; a pupil who started before closing may still hand in for 2 hours.
   Cost: a pupil reads the file by URL (cheap); opening/closing is 1 put.
+- OPENING AND CLOSING TIMES (added 9 Nov 2026): the admin can tap "Set times" on a test row and choose Opens / Closes (Malaysia time, UTC+8).
+  Saved as `from`/`until` (ms) on that test in `config/open.json` (`setSchedule` in `api/_lib.js`, action `setSchedule` in `api/results.js`, admin only).
+  `openStateFrom(saved, now)` decides by the clock on every read (no timer, no extra Blob operation): open from `from` until `until`; after `until`
+  pupils inside may still hand in for 2 hours (`at` = until). Once a scheduled test's opening time comes, any test opened earlier with the button is
+  closed (one test at a time). Times of two tests may not overlap (refused with a message); closing must be after opening and in the future.
+  Pressing Open or Close on a test removes its times (the teacher decides now; the page asks first); opening a test with the button while another
+  is open by its times cancels those times. "Remove times" deletes them. The teacher line shows "Coming up: X opens ... and closes ...".
+  Pupils with no open test see "<test> opens on <day, date, time>" (`/api/quiz` returns `next` and the server clock `now`), and the page checks
+  again by itself just after the opening time (if within 12 hours). Cost: saving times is 1 put.
 - Each practice set has its OWN challenge: full marks in Practice set 1 unlock `challenge`, full marks in Practice set 2 unlock `challenge2`
   (`after` on the challenge quiz names its practice set; `next` on the practice set names its challenge; `hasFullMarks(klass, name, practiceKey)`).
 

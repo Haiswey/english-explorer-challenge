@@ -1,4 +1,4 @@
-import { readBody, checkPin, getResults, deleteResult, getOpenState, setOpen } from './_lib.js';
+import { readBody, checkPin, getResults, deleteResult, getOpenState, setOpen, setSchedule } from './_lib.js';
 import { getQuiz, totalOf, QUIZZES, SETS } from './_quiz.js';
 
 export default async function handler(req, res) {
@@ -13,6 +13,12 @@ export default async function handler(req, res) {
       let open;
       try { open = await setOpen(String(body.set), body.open === true); } catch (e) { return res.status(400).json({ error: e.message }); }
       return res.status(200).json({ open }); // the state just saved (reading it back would only add a wait)
+    }
+    if (body.action === 'setSchedule') { // opening and closing times; only the admin
+      if (role !== 'admin') return res.status(403).json({ error: 'Only the admin can open or close tests.' });
+      let open;
+      try { open = await setSchedule(String(body.set), body.from == null ? null : body.from, body.until); } catch (e) { return res.status(400).json({ error: e.message }); }
+      return res.status(200).json({ open });
     }
     if (body.action === 'delete') {
       if (role !== 'admin') return res.status(403).json({ error: 'Only the admin can delete scores.' });

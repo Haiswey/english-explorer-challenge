@@ -27,5 +27,8 @@ export default async function handler(req, res) {
   }
   const classes = await year2Classes().catch(() => []);
   const sets = SETS.filter(s => s.ready && !QUIZZES[s.key].after && state[s.key].open).map(s => ({ key: s.key, label: s.label }));
-  res.status(200).json({ classes, sets });
+  // The next test with an opening time still to come, so the page can say when it opens.
+  const now = Date.now();
+  const next = SETS.filter(s => s.ready && !QUIZZES[s.key].after && state[s.key].from > now).sort((a, b) => state[a.key].from - state[b.key].from)[0];
+  res.status(200).json({ classes, sets, now, ...(next ? { next: { key: next.key, label: next.label, from: state[next.key].from, until: state[next.key].until } } : {}) });
 }
