@@ -342,7 +342,7 @@ export const CHALLENGE3 = {
       help: 'Look at the picture. Tap the correct word.',
       qs: [
         { id: 'A1', pic: 'OCEAN', alt: 'the ocean', ans: 'ocean', opts: ['ocean', 'lake', 'sand'] },
-        { id: 'A2', pic: 'JUNGLE', alt: 'a jungle', ans: 'jungle', opts: ['jungle', 'forest', 'garden'] },
+        { id: 'A2', pic: 'JUNGLE', alt: 'a jungle', ans: 'jungle', opts: ['jungle', 'lake', 'garden'] }, // not 'forest': too close to a jungle (Miss Irene)
         { id: 'A3', pic: '1F3A3', alt: 'a fishing rod and a fish', ans: 'catch a fish', opts: ['catch a fish', 'eat a fish', 'look for shells'] },
         { id: 'A4', pic: 'KANGAROO', alt: 'a kangaroo', ans: 'kangaroo', opts: ['kangaroo', 'koala', 'cheetah'] },
         { id: 'A5', pic: 'SHOULDER', alt: 'a child touching a shoulder', ans: 'shoulder', opts: ['shoulder', 'knee', 'neck'] },
@@ -355,7 +355,7 @@ export const CHALLENGE3 = {
       help: 'Look at the picture. Type the word on the line.',
       qs: [
         { id: 'B1', pic: 'SCORPION', alt: 'a scorpion', word: 'scorpion' },
-        { id: 'B2', pic: '1F6C1', alt: 'a bathroom', word: 'bathroom' },
+        { id: 'B2', pic: '1F6C1', alt: 'a bathroom', word: 'bathroom', also: ['bathtub'] }, // the picture shows a bathtub, so that word is right too
         { id: 'B3', pic: 'SWEATER', alt: 'a sweater', word: 'sweater' },
         { id: 'B4', pic: 'BAGPIPES', alt: 'bagpipes', word: 'bagpipes' },
         { id: 'B5', pic: 'JELLYFISH', alt: 'a jellyfish', word: 'jellyfish' },
@@ -368,9 +368,9 @@ export const CHALLENGE3 = {
       qs: [
         { id: 'C1', vs: [ // How many ...? There are ...
           { pic: '1F41A', alt: 'two shells', text: 'How many shells are there? There ___ two.', ans: 'are', opts: ['are', 'is', 'have'] },
-          { pic: '1F9E6', alt: 'two socks', text: 'How many socks are there? There ___ two.', ans: 'are', opts: ['are', 'is', 'have'] }] },
+          { pic: '1F9E6', alt: 'two socks', text: 'There ___ socks.', ans: 'are', opts: ['are', 'is', 'have'] }] },
         { id: 'C2', vs: [ // Is there / Are there - short answers
-          { pic: 'OCEAN', alt: 'the ocean', text: 'Are there any sharks in the ocean? Yes, there ___.', ans: 'are', opts: ['are', 'is', "aren't"] },
+          { pic: 'OCEAN', alt: 'the ocean', text: 'Sharks ___ in the ocean.', ans: 'live', opts: ['lives', 'live', 'living'] },
           { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'Is there a polar bear on the ice? Yes, there ___.', ans: 'is', opts: ['is', 'are', "isn't"] }] },
         { id: 'C3', vs: [ // isn't wearing - look at the colour in the picture
           { pic: '1F9E5', alt: 'a green jacket', text: 'He ___ wearing a red jacket.', ans: "isn't", opts: ["isn't", "aren't", "don't"] },
@@ -511,9 +511,10 @@ export function mark(quiz, answers, who = {}) {
         if (k === 'gap') question = q.text;
       } else if (k === 'word') {
         shown = typeof given === 'string' ? given.replace(/\s+/g, ' ').trim().slice(0, 40) : '';
-        correct = q.word;
+        const okWords = [q.word, ...(q.also || [])]; // `also`: other words that are right for the picture
+        correct = okWords.join(' or ');
         const typed = shown.toLowerCase().replace(/\s+/g, '');
-        got = typed === q.word ? p.marksEach : (oneLetterWrong(typed, q.word) ? 1 : 0);
+        got = okWords.includes(typed) ? p.marksEach : (okWords.some(w => oneLetterWrong(typed, w)) ? 1 : 0);
       } else if (k === 'letters') {
         const blanks = q.blanks || q.word.split('').map((_, i) => i);
         const letters = Array.isArray(given) ? given.map(x => String(x || '').trim().slice(0, 1).toLowerCase()) : [];
