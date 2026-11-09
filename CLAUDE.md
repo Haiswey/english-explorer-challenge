@@ -37,7 +37,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - LEAVING THE PAGE: while a test is going on (started, not handed in), the pupil page counts each time the pupil leaves it for 1.5 seconds or more
   (another app or tab; `S.left`, saved on the device). It is sent with the answers (`left`), saved in the result, and the teacher page shows a red tag
   "left the page N times" under the name, in the pupil's answer view and as a "Left page" column in the CSV. The page's own "Submit anyway?" box does not count.
-  Test pupils are not counted. Pupils are not warned on screen (only the teacher sees it).
+  Test pupils are not counted. When the pupil comes back, a warning box (`leftWarning`, `.leftbox` in style.css) says "Please stay on this page"
+  and how many times the teacher can see they left; "Back to my quiz" closes it and the pupil carries on where they were.
 - The name screen has a "My name is not here" button: the pupil types their full name (for example a new transfer pupil).
   `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.
