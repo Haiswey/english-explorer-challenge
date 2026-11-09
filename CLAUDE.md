@@ -130,8 +130,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Ranking for the real quiz (`rank: ['C','D','E']`): total, then Grammar, then Word order, then Find the mistake, then time (practice sets keep D then B).
 - Pictures made for it: GOAT, STAIRS, SWEATER, PAINT, POLAR, PIANO, KANGAROO, DOLPHIN, CHEETAH, SUNGLASSES, TONGUE, GLOVES, BLOUSE; page about 1.38 MB with 60 pictures (GARAGE, SCORPION, BAGPIPES added; no unused ones).
 - It has its OWN challenge: `challenge3` (id `challenge-real-1`, "Challenge for the real quiz"), only for pupils with 60/60 in the real quiz (`after: 'real'`, `next` on REAL),
-  linked to the real quiz's switch (opens/closes with it). Same 5 parts, harder, 28 questions, 60 marks: A Vocabulary 7 x 1 (close distractors: ocean/lake, jungle/forest,
-  kangaroo/koala, bedroom/living room ...), B Spelling 6 x 2 typed (scorpion, bathroom, sweater, bagpipes, jellyfish, sandcastle; scorpion and bagpipes replaced penguin and mountains on 9 Nov 2026, pictures SCORPION and BAGPIPES show ONLY the object on a plain background so no other word, like desert, could be written instead), C Grammar 8 x 2 with versions,
+  linked to the real quiz's switch (opens/closes with it). Same 5 parts, harder, 28 questions, 60 marks: A Vocabulary 7 x 1 (close distractors: ocean/lake, jungle/lake/garden (forest removed 9 Nov 2026: too close to jungle),
+  kangaroo/koala, bedroom/living room ...), B Spelling 6 x 2 typed (scorpion, bathroom (bathtub also accepted: `also` on a `word` question lists other right words), sweater, bagpipes, jellyfish, sandcastle; scorpion and bagpipes replaced penguin and mountains on 9 Nov 2026, pictures SCORPION and BAGPIPES show ONLY the object on a plain background so no other word, like desert, could be written instead), C Grammar 8 x 2 with versions (9 Nov 2026: C1 is "There ___ socks." / "There ___ shells." (are/is/have); C2 is "Sharks ___ in the ocean." / "Polar bears ___ on the ice." (lives/live/living)),
   D Word order 5 x 3, E Find the mistake 2 x 5 with versions. Ranking C, D, E like the real quiz. The page offers a challenge after ANY test that has `next`.
 
 ## Planned tests
