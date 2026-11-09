@@ -27,7 +27,20 @@ const testGoing = () => S && S.startedAt && !S.result && !isTestName(S.name);
 let asking = false; // a question box from this page (Submit anyway?) is not leaving the page
 const ask = m => { asking = true; try { return confirm(m); } finally { asking = false; awayAt = 0; } };
 const goneAway = () => { if (testGoing() && !awayAt && !asking) awayAt = Date.now(); };
-const cameBack = () => { if (!awayAt) return; const long = Date.now() - awayAt >= 1500; awayAt = 0; if (long && testGoing()) { S.left = (S.left || 0) + 1; save(); } };
+const cameBack = () => { if (!awayAt) return; const long = Date.now() - awayAt >= 1500; awayAt = 0; if (long && testGoing()) { S.left = (S.left || 0) + 1; save(); leftWarning(); } };
+// A friendly warning when the pupil comes back. They tap the button to carry on; their answers are kept.
+function leftWarning() {
+  const old = document.getElementById('leftbox'); if (old) old.remove();
+  const n = S.left || 1;
+  const box = document.createElement('div');
+  box.id = 'leftbox'; box.className = 'leftbox'; box.setAttribute('role', 'alertdialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'lefth');
+  box.innerHTML = '<div class="panel"><h2 class="head" id="lefth">Please stay on this page</h2>' +
+    '<p>You left the quiz page. Stay here until you tap <b>Submit my answers</b>.</p>' +
+    '<p class="err">Your teacher can see that you left (' + n + (n === 1 ? ' time' : ' times') + ').</p>' +
+    '<button class="btn go" id="leftok">Back to my quiz</button></div>';
+  document.body.append(box);
+  const b = document.getElementById('leftok'); b.onclick = () => box.remove(); b.focus();
+}
 document.addEventListener('visibilitychange', () => document.hidden ? goneAway() : cameBack());
 window.addEventListener('blur', goneAway);
 window.addEventListener('focus', () => { if (!document.hidden) cameBack(); });

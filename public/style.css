@@ -164,3 +164,10 @@ img { max-width: 100%; }
 .wordlines input:focus { background: rgba(255, 210, 63, .12); }
 .classes.sets { display: grid; grid-template-columns: 1fr; }
 .classes.sets button { font-size: 24px; padding: 16px; }
+
+/* Warning when a pupil comes back after leaving the quiz page */
+.leftbox { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .6); }
+.leftbox .panel { max-width: 420px; width: 100%; text-align: center; border-color: var(--coral); }
+.leftbox h2 { font-size: 26px; margin: 0 0 8px; color: var(--coral); }
+.leftbox p { margin: 0 0 12px; font-size: 19px; }
+.leftbox .btn { width: 100%; }
