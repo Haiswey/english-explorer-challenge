@@ -197,7 +197,7 @@ function render() {
   const avg = official.length ? (official.reduce((s, r) => s + r.score, 0) / official.length).toFixed(1) : '0';
   const ties = official.filter((r, i) => official.some((o, j) => j !== i && o.score === r.score)).length;
   $('stats').innerHTML = '<div>Pupils<b>' + official.length + '</b></div><div>Average<b>' + avg + ' / ' + DATA.total + '</b></div><div>Highest<b>' + (official[0] ? official[0].score : '–') + '</b></div><div>Sharing a total<b>' + ties + '</b></div>';
-  const tagsOf = r => (r.attempt > 1 || r.verified === false) ? '<div class="tags">' + (r.attempt > 1 ? '<span class="tag retake">retake ' + r.attempt + '</span>' : '') + (r.verified === false ? '<span class="tag">name not on list</span>' : '') + '</div>' : '';
+  const tagsOf = r => (r.attempt > 1 || r.verified === false || r.left > 0) ? '<div class="tags">' + (r.attempt > 1 ? '<span class="tag retake">retake ' + r.attempt + '</span>' : '') + (r.verified === false ? '<span class="tag">name not on list</span>' : '') + (r.left > 0 ? '<span class="tag">' + leftText(r.left) + '</span>' : '') + '</div>' : '';
   $('rows').innerHTML = rows.length ? rows.map((r, i) => '<tr data-i="' + i + '">' +
     '<td class="num rank" data-l="Rank">' + (r.attempt === 1 ? r.rank : '') + '</td>' +
     '<td class="nm" data-l="Name"><span class="who">' + esc(r.name) + '</span>' + tagsOf(r) + '</td>' +
@@ -211,8 +211,9 @@ function render() {
   $('note').textContent = 'Only each pupil\u2019s first attempt is ranked. Tap a row to see the answers' + (isAdmin() ? ', or delete an attempt (this also lets that pupil try again).' : '.');
 }
 const isAdmin = () => DATA && DATA.role === 'admin';
+const leftText = n => 'left the page ' + n + (n === 1 ? ' time' : ' times');
 function detail(r) {
-  $('dlg').innerHTML = '<h2 class="head" style="font-size:24px;color:var(--sea)">' + esc(r.name) + ', ' + esc(r.klass) + '</h2><p class="muted" style="margin:4px 0 12px">' + r.score + ' / ' + r.total + ' marks, ' + mmss(r.seconds) + ', ' + when(r.submittedAt) + (r.attempt > 1 ? ', retake ' + r.attempt : '') + '</p>' +
+  $('dlg').innerHTML = '<h2 class="head" style="font-size:24px;color:var(--sea)">' + esc(r.name) + ', ' + esc(r.klass) + '</h2><p class="muted" style="margin:4px 0 12px">' + r.score + ' / ' + r.total + ' marks, ' + mmss(r.seconds) + ', ' + when(r.submittedAt) + (r.attempt > 1 ? ', retake ' + r.attempt : '') + (r.left > 0 ? ', <b style="color:var(--coral)">' + leftText(r.left) + '</b>' : '') + '</p>' +
     '<div class="scroll"><table class="ans" style="min-width:0"><thead><tr><th>Q</th><th>Pupil\u2019s answer</th><th>Correct answer</th><th class="num">Marks</th></tr></thead><tbody>' +
     r.rows.map(x => '<tr><td>' + esc(x.q) + '</td><td>' + (x.question ? '<span class="muted">' + esc(x.question) + '</span><br>' : '') + esc(x.given || '(no answer)') + '</td><td>' + esc(x.correct) + '</td><td class="num"><span class="got' + (x.got ? '' : ' zero') + '">' + x.got + '</span> / ' + x.max + '</td></tr>').join('') +
     '</tbody></table></div><p class="err" id="derr"></p><div class="actions">' + (isAdmin() ? '<button class="btn danger" id="del">Delete this attempt</button>' : '') + '<button class="btn" id="close">Close</button></div>';
@@ -228,8 +229,8 @@ function detail(r) {
   };
 }
 function csv() {
-  const head = ['Rank', 'Name', 'Class', 'Attempt', 'Total'].concat(DATA.parts.map(p => p.name), ['Seconds', 'Submitted']);
-  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [goodSec(r.seconds) ? r.seconds : '', new Date(r.submittedAt).toISOString()])));
+  const head = ['Rank', 'Name', 'Class', 'Attempt', 'Total'].concat(DATA.parts.map(p => p.name), ['Seconds', 'Left page', 'Submitted']);
+  const lines = [head].concat(SHOWN.map(r => [r.attempt === 1 ? r.rank : '', r.name, r.klass, r.attempt, r.score].concat(DATA.parts.map(p => r.parts[p.id] ?? 0), [goodSec(r.seconds) ? r.seconds : '', r.left || 0, new Date(r.submittedAt).toISOString()])));
   const text = lines.map(l => l.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv' }));
   a.download = 'english-explorer-' + $('lvl').value + '-' + ($('cls').value || 'year2') + '.csv'; a.click();

@@ -34,6 +34,10 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   To allow a retake, the teacher deletes that pupil's attempt on the teacher page (this removes the marker).
   A FINISHED test saved on the pupil's device is only shown after `/api/attempt` confirms the server still has it; if the attempt was deleted, the page
   removes the saved copy and the pupil starts again (fixed 9 Nov 2026: before, the device kept showing the old result and its challenge offer). Offline, the device copy is shown.
+- LEAVING THE PAGE: while a test is going on (started, not handed in), the pupil page counts each time the pupil leaves it for 1.5 seconds or more
+  (another app or tab; `S.left`, saved on the device). It is sent with the answers (`left`), saved in the result, and the teacher page shows a red tag
+  "left the page N times" under the name, in the pupil's answer view and as a "Left page" column in the CSV. The page's own "Submit anyway?" box does not count.
+  Test pupils are not counted. Pupils are not warned on screen (only the teacher sees it).
 - The name screen has a "My name is not here" button: the pupil types their full name (for example a new transfer pupil).
   `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.

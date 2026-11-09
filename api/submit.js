@@ -45,6 +45,7 @@ export default async function handler(req, res) {
     const rec = {
       testId: QUIZ.id, title: QUIZ.title, name, klass, verified,
       score: m.score, total: m.total, parts: m.parts, rows: m.rows,
+      left: Math.max(0, Math.min(999, Math.floor(Number(body.left) || 0))), // times the pupil left the page during the test
       startedAt, submittedAt: now, seconds: (now - startedAt) / 1000 <= 10800 ? Math.round((now - startedAt) / 1000) : null // over 3 hours = the device clock was wrong
     };
     const summary = { score: m.score, total: m.total, parts: m.parts };
