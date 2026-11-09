@@ -20,6 +20,17 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const nameKey = n => String(n).replace(/\s+/g, ' ').trim().toLowerCase();
 const key = () => 'kkx-' + QZ.id + '-' + S.klass + '-' + nameKey(S.name);
 const save = () => { try { localStorage.setItem(key(), JSON.stringify(S)); } catch (e) {} };
+// Leaving the page during the test (another app or tab) is counted and sent with the answers, so the teacher can see it.
+// Only while a test is going on (started, not handed in). A flicker under 1.5 seconds (keyboard, a notification) is not counted.
+let awayAt = 0;
+const testGoing = () => S && S.startedAt && !S.result && !isTestName(S.name);
+let asking = false; // a question box from this page (Submit anyway?) is not leaving the page
+const ask = m => { asking = true; try { return confirm(m); } finally { asking = false; awayAt = 0; } };
+const goneAway = () => { if (testGoing() && !awayAt && !asking) awayAt = Date.now(); };
+const cameBack = () => { if (!awayAt) return; const long = Date.now() - awayAt >= 1500; awayAt = 0; if (long && testGoing()) { S.left = (S.left || 0) + 1; save(); } };
+document.addEventListener('visibilitychange', () => document.hidden ? goneAway() : cameBack());
+window.addEventListener('blur', goneAway);
+window.addEventListener('focus', () => { if (!document.hidden) cameBack(); });
 const load = (k, n) => { try { return JSON.parse(localStorage.getItem('kkx-' + QZ.id + '-' + k + '-' + nameKey(n)) || 'null'); } catch (e) { return null; } };
 function emoji(code) { return code.split('-').map(h => String.fromCodePoint(parseInt(h, 16))).join(''); }
 function pic(q) {
@@ -307,11 +318,11 @@ function reviewScreen() {
   app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { S.i = +b.dataset.go; save(); qScreen(); });
   document.getElementById('back').onclick = () => qScreen();
   document.getElementById('send').onclick = async (ev) => {
-    if (missing && !confirm('Some questions have no answer. Submit anyway?')) return;
+    if (missing && !ask('Some questions have no answer. Submit anyway?')) return;
     const btn = ev.currentTarget; btn.disabled = true; btn.textContent = 'Sending…';
     try {
       const r = await fetch('/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: S.name, klass: S.klass, set: QZ.key, answers: S.a, startedAt: S.startedAt }) });
+        body: JSON.stringify({ name: S.name, klass: S.klass, set: QZ.key, answers: S.a, startedAt: S.startedAt, left: S.left || 0 }) });
       const j = await r.json();
       if (r.status === 409 && j.already) { S.result = { score: j.score, total: j.total, parts: j.parts }; S.already = true; save(); return doneScreen(); }
       if (j.closed) { document.getElementById('err').textContent = 'This test is closed now. Please tell your teacher.'; btn.disabled = false; btn.textContent = 'Submit my answers'; return; }
