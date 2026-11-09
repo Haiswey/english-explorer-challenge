@@ -119,15 +119,19 @@ function nameScreen(klass) {
 
 const isTestName = n => /^test pupil [1-5]$/i.test(String(n).replace(/\s+/g, ' ').trim());
 async function pickName(klass, name) {
-  const old = isTestName(name) ? null : load(klass, name); // a test pupil always starts fresh
-  if (old && old.qid === QZ.id) { S = old; return S.result ? doneScreen() : (S.i >= 0 ? qScreen() : readyScreen()); }
+  let old = isTestName(name) ? null : load(klass, name); // a test pupil always starts fresh
+  if (old && old.qid !== QZ.id) old = null;
+  if (old && !old.result) { S = old; return S.i >= 0 ? qScreen() : readyScreen(); } // unfinished on this device: carry on
   // One attempt each: if the server already has this pupil's result (another device, an earlier visit), show it.
+  // A finished test saved on this device is only shown while the server still has it: when the teacher deletes the
+  // attempt (to allow a retake), the old result and its challenge offer must not come back.
   app.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>';
   try {
     const r = await fetch('/api/attempt?set=' + QZ.key + '&klass=' + encodeURIComponent(klass) + '&name=' + encodeURIComponent(name), { cache: 'no-store' });
     const j = await r.json();
-    if (j.done) { S = { qid: QZ.id, klass, name, seq: [], tiles: {}, a: {}, i: -1, result: j.result, already: true }; return doneScreen(); }
-  } catch (e) {}
+    if (j.done) { S = old || { qid: QZ.id, klass, name, seq: [], tiles: {}, a: {}, i: -1, already: true }; S.result = j.result; return doneScreen(); }
+    if (old) { try { localStorage.removeItem('kkx-' + QZ.id + '-' + klass + '-' + nameKey(name)); } catch (e) {} old = null; } // deleted by the teacher: start again
+  } catch (e) { if (old) { S = old; return doneScreen(); } } // offline: show what this device has
   const rnd = seeded(klass + '|' + name + '|' + QZ.id);
   const order = {}; const tiles = {};
   QZ.parts.forEach(p => {
