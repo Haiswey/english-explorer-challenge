@@ -32,6 +32,8 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
   `attempts/<quiz id>/<class>-<name hash>.json`; later submits get HTTP 409 with the first result and the page shows it.
   `/api/attempt` tells the page before the pupil starts. Results saved before markers existed are also found.
   To allow a retake, the teacher deletes that pupil's attempt on the teacher page (this removes the marker).
+  A FINISHED test saved on the pupil's device is only shown after `/api/attempt` confirms the server still has it; if the attempt was deleted, the page
+  removes the saved copy and the pupil starts again (fixed 9 Nov 2026: before, the device kept showing the old result and its challenge offer). Offline, the device copy is shown.
 - The name screen has a "My name is not here" button: the pupil types their full name (for example a new transfer pupil).
   `api/submit.js` then saves the result tagged "name not on list" (`verified: false`) so the teacher can see it.
 - `api/submit.js` marks on the server and saves one JSON file per attempt in Blob under `results/<quiz id>/`.
