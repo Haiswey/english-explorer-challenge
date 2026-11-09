@@ -13,6 +13,9 @@ h1 { font-size: 34px; color: var(--sea); }
 .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 16px 0; }
 .bar select, .bar input { font: inherit; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
 .bar .btn { font-size: 17px; min-height: 44px; padding: 6px 18px; }
+.bar label { max-width: 100%; }
+.bar select { max-width: 100%; } /* a long test name must not push the page sideways */
+#lvl { max-width: calc(100vw - 100px); }
 .scroll { overflow-x: auto; background: var(--card); border: 2px solid var(--line); border-radius: 16px; }
 table { border-collapse: collapse; width: 100%; }
 th, td { padding: 8px 8px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }

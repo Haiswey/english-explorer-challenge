@@ -7,7 +7,7 @@
 //   practice2  "Practice set 2"   37 marks. Spelling = type the WHOLE word on plain lines, no letter hints.
 //   challenge  "Challenge for set 1"  39 marks. Opens for pupils who scored every mark in Practice set 1.
 //   challenge2 "Challenge for set 2"  39 marks. Opens for pupils who scored every mark in Practice set 2.
-//   real       "Real quiz"        60 marks, 5 parts (see REAL). Closed until the admin opens it.
+//   real       "Year 2 Online Quiz Competition" (was "Real quiz")        60 marks, 5 parts (see REAL). Closed until the admin opens it.
 // Part kinds: choose (tap a word), letters (type letters into the gaps), word (type the whole word on lines),
 // gap (tap the word that fits the sentence), build (tap word tiles in order).
 
@@ -233,7 +233,7 @@ export const REAL = {
   // Ranking: total, then Grammar, then Word order, then Find the mistake, then time.
   id: 'real-quiz-1', key: 'real', level: 'real', next: 'challenge3',
   title: 'English Explorer Challenge',
-  subtitle: 'Real quiz',
+  subtitle: 'Year 2 Online Quiz Competition',
   rank: ['C', 'D', 'E'],
   parts: [
     {
@@ -334,7 +334,7 @@ export const CHALLENGE3 = {
   // Different words and sentences from the real quiz; no spelling word appears anywhere else in it.
   id: 'challenge-real-1', key: 'challenge3', level: 'challenge', after: 'real',
   title: 'English Explorer Challenge',
-  subtitle: 'Challenge for the real quiz',
+  subtitle: 'Challenge for the Year 2 Online Quiz Competition',
   rank: ['C', 'D', 'E'],
   parts: [
     {
@@ -427,8 +427,8 @@ export const SETS = [
   { key: 'practice2', label: 'Practice set 2', ready: true, openByDefault: false },
   { key: 'challenge', label: 'Challenge for set 1', ready: true, openByDefault: true, linkedTo: 'practice1' },
   { key: 'challenge2', label: 'Challenge for set 2', ready: true, openByDefault: false, linkedTo: 'practice2' },
-  { key: 'real', label: 'Real quiz', ready: true, openByDefault: false },
-  { key: 'challenge3', label: 'Challenge for the real quiz', ready: true, openByDefault: false, linkedTo: 'real' }
+  { key: 'real', label: 'Year 2 Online Quiz Competition', ready: true, openByDefault: false },
+  { key: 'challenge3', label: 'Challenge for the Year 2 Online Quiz Competition', ready: true, openByDefault: false, linkedTo: 'real' }
 ];
 // 'practice' is the old name of Practice set 1 (pages opened before the update still send it).
 export const getQuiz = key => QUIZZES[key === 'practice' ? 'practice1' : key] || PRACTICE;
