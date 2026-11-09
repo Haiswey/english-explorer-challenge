@@ -96,6 +96,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - If any sound is ever added: edge-tts MP3s embedded as base64 (voices en-SG-LunaNeural, en-GB-SoniaNeural or
   en-US-AnaNeural, rate -10%). Never use speechSynthesis.
 - Year 2 friendly: big tap targets, short instructions, no negative marking.
+- Vocabulary and spelling pictures are sent to the pupil's device with the plain description "the picture" (`HIDDEN_ALT` in `publicQ`), because their real description is the answer.
 
 ## Challenge levels (39 marks each; one per practice set)
 - `challenge-1` ("Challenge for set 1") is only for pupils who EVER scored 35/35 in Practice set 1; `challenge-2` ("Challenge for set 2") only for 37/37 in Practice set 2.
@@ -114,7 +115,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Content from the Super Minds 1 Teacher's Book (Units 5-9 word lists + Unit 6 English for school: habitats and their animals). Different words from the practice sets.
 - A Vocabulary 8 x 1: topic words from the book plus a few extra words inside the same topics (*): goat, stairs, sweater, shoulder*, paint a picture,
   polar region, play the piano, sunglasses*.
-- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule), her chosen words: tongue, gloves, kitchen, dolphin, cheetah, blouse.
+- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule), her chosen words: tongue, gloves, garage (changed from kitchen on 9 Nov 2026; picture GARAGE), dolphin, cheetah, blouse.
   No spelling word appears anywhere else in the quiz (option, sentence or tile), so nothing gives a spelling away.
 - C Grammar 10 x 2, from the Unit 5-9 grammar lessons and the mistakes Year 2 pupils often make: there is/are; short answers (Yes, there is / No, there aren't;
   Yes, he is / No, she isn't; No, it can't / Yes, he can; Yes, I do); It's (one) / They're (more than one); this/these; am/is + wearing; can + plain verb;
@@ -124,7 +125,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - QUESTION BANK: C and E questions have versions (`vs`); each pupil gets one, chosen from class + name by `pickVariant` (FNV hash). The page uses the
   SAME formula (index.html `pickVariant`), so it shows the version the server marks. `mark(quiz, answers, { klass, name })` needs the pupil.
 - Ranking for the real quiz (`rank: ['C','D','E']`): total, then Grammar, then Word order, then Find the mistake, then time (practice sets keep D then B).
-- Pictures made for it: GOAT, STAIRS, SWEATER, PAINT, POLAR, PIANO, KANGAROO, DOLPHIN, CHEETAH, SUNGLASSES, TONGUE, GLOVES, BLOUSE; page about 1.25 MB with 57 pictures (no unused ones).
+- Pictures made for it: GOAT, STAIRS, SWEATER, PAINT, POLAR, PIANO, KANGAROO, DOLPHIN, CHEETAH, SUNGLASSES, TONGUE, GLOVES, BLOUSE; page about 1.3 MB with 58 pictures (GARAGE added; no unused ones).
 - It has its OWN challenge: `challenge3` (id `challenge-real-1`, "Challenge for the real quiz"), only for pupils with 60/60 in the real quiz (`after: 'real'`, `next` on REAL),
   linked to the real quiz's switch (opens/closes with it). Same 5 parts, harder, 28 questions, 60 marks: A Vocabulary 7 x 1 (close distractors: ocean/lake, jungle/forest,
   kangaroo/koala, bedroom/living room ...), B Spelling 6 x 2 typed (penguin, bathroom, sweater, mountains, jellyfish, sandcastle), C Grammar 8 x 2 with versions,

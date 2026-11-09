@@ -252,13 +252,13 @@ export const REAL = {
     },
     {
       // Every word is typed in full on lines (2 marks; 1 if the length is right and exactly one letter is wrong; a missing or extra letter = 0).
-      // Miss Irene's choice of words: tongue, gloves, kitchen, dolphin, cheetah (ee), blouse.
+      // Miss Irene's choice of words: tongue, gloves, garage (was kitchen), dolphin, cheetah (ee), blouse.
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
       help: 'Look at the picture. Type the word on the line.',
       qs: [
         { id: 'B1', pic: 'TONGUE', alt: 'a child sticking out a tongue', word: 'tongue' },
         { id: 'B2', pic: 'GLOVES', alt: 'gloves', word: 'gloves' },
-        { id: 'B3', pic: '1F9D1-200D-1F373', alt: 'a kitchen', word: 'kitchen' },
+        { id: 'B3', pic: 'GARAGE', alt: 'a garage', word: 'garage' },
         { id: 'B4', pic: 'DOLPHIN', alt: 'a dolphin', word: 'dolphin' },
         { id: 'B5', pic: 'CHEETAH', alt: 'a cheetah', word: 'cheetah' },
         { id: 'B6', pic: 'BLOUSE', alt: 'a blouse', word: 'blouse' }
@@ -462,14 +462,17 @@ export function pickVariant(n, klass, name, qid) {
 const resolveQ = (q, who) => q.vs ? { id: q.id, kind: q.kind, ...q.vs[pickVariant(q.vs.length, who.klass, who.name, q.id)] } : q;
 const kindOf = (p, q) => q.kind || p.kind;
 
+// In vocabulary and spelling the picture's description IS the answer ("a garage"), so the pupil's device gets a plain one
+// (it shows if a picture does not load, and screen readers read it).
+const HIDDEN_ALT = 'the picture';
 function publicQ(k, q) {
-  if (k === 'choose') return { pic: q.pic, alt: q.alt, opts: q.opts };
+  if (k === 'choose') return { pic: q.pic, alt: HIDDEN_ALT, opts: q.opts };
   if (k === 'gap') return { pic: q.pic, alt: q.alt, text: q.text, opts: q.opts };
-  if (k === 'word') return { pic: q.pic, alt: q.alt };
+  if (k === 'word') return { pic: q.pic, alt: HIDDEN_ALT };
   if (k === 'fix') return { pic: q.pic, alt: q.alt, words: q.words };
   if (k === 'letters') {
     const blanks = q.blanks || q.word.split('').map((_, i) => i);
-    return { pic: q.pic, alt: q.alt, len: q.word.length, blanks, shown: q.word.split('').map((c, i) => blanks.includes(i) ? '' : c) };
+    return { pic: q.pic, alt: HIDDEN_ALT, len: q.word.length, blanks, shown: q.word.split('').map((c, i) => blanks.includes(i) ? '' : c) };
   }
   // Word tiles are sent in lower case so a capital letter does not show which word is first.
   return { pic: q.pic, alt: q.alt, tiles: q.ans.map(w => w.toLowerCase()), caps: capsOf(q.ans) };
