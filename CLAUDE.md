@@ -50,7 +50,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 
 ## Tests and the open/close switches
 - Tests (registry in `api/_quiz.js`: `QUIZZES`, `SETS`, `getQuiz(key)`): `practice1` (id `mock-easy-3`, shown as "Practice set 1"),
-  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (id `real-quiz-1`, "Real quiz", the competition; CLOSED until the admin opens it), `challenge3` (id `challenge-real-1`, "Challenge for the real quiz").
+  `practice2` (id `practice-set-2`), `challenge` (id `challenge-1`, "Challenge for set 1"), `challenge2` (id `challenge-2`, "Challenge for set 2"), `real` (id `real-quiz-1`, shown as "Year 2 Online Quiz Competition" (renamed from "Real quiz" on 9 Nov 2026), the competition; CLOSED until the admin opens it), `challenge3` (id `challenge-real-1`, "Challenge for the Year 2 Online Quiz Competition"). The teacher page Test box is capped to the screen width so these long names never cause sideways scrolling.
   Pages and APIs pass `set=<key>` (old `level=practice|challenge` still works; no key means set 1).
 - Open/close: one file `config/open.json` in Blob (`getOpenState`, `setOpen`, `mayHandIn` in `api/_lib.js`). Defaults: set 1 open, set 2 closed, real closed.
   A challenge is LINKED to its practice set (`linkedTo` in `SETS`): it is open exactly when its practice set is open, and opening or closing either one
