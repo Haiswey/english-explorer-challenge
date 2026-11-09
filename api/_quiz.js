@@ -366,12 +366,12 @@ export const CHALLENGE3 = {
       id: 'C', kind: 'gap', name: 'Grammar', marksEach: 2,
       help: 'Tap the word that fits the sentence.',
       qs: [
-        { id: 'C1', vs: [ // How many ...? There are ...
-          { pic: '1F41A', alt: 'two shells', text: 'How many shells are there? There ___ two.', ans: 'are', opts: ['are', 'is', 'have'] },
+        { id: 'C1', vs: [ // There are + plural
+          { pic: '1F41A', alt: 'two shells', text: 'There ___ shells.', ans: 'are', opts: ['are', 'is', 'have'] },
           { pic: '1F9E6', alt: 'two socks', text: 'There ___ socks.', ans: 'are', opts: ['are', 'is', 'have'] }] },
-        { id: 'C2', vs: [ // Is there / Are there - short answers
+        { id: 'C2', vs: [ // present simple: plural animals + live
           { pic: 'OCEAN', alt: 'the ocean', text: 'Sharks ___ in the ocean.', ans: 'live', opts: ['lives', 'live', 'living'] },
-          { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'Is there a polar bear on the ice? Yes, there ___.', ans: 'is', opts: ['is', 'are', "isn't"] }] },
+          { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'Polar bears ___ on the ice.', ans: 'live', opts: ['lives', 'live', 'living'] }] },
         { id: 'C3', vs: [ // isn't wearing - look at the colour in the picture
           { pic: '1F9E5', alt: 'a green jacket', text: 'He ___ wearing a red jacket.', ans: "isn't", opts: ["isn't", "aren't", "don't"] },
           { pic: '1F456', alt: 'blue jeans', text: 'She ___ wearing green jeans.', ans: "isn't", opts: ["isn't", "aren't", "doesn't"] }] },
