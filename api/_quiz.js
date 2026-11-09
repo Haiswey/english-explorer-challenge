@@ -354,10 +354,10 @@ export const CHALLENGE3 = {
       id: 'B', kind: 'word', name: 'Spelling', marksEach: 2,
       help: 'Look at the picture. Type the word on the line.',
       qs: [
-        { id: 'B1', pic: 'PENGUIN', alt: 'a penguin', word: 'penguin' },
+        { id: 'B1', pic: 'SCORPION', alt: 'a scorpion', word: 'scorpion' },
         { id: 'B2', pic: '1F6C1', alt: 'a bathroom', word: 'bathroom' },
         { id: 'B3', pic: 'SWEATER', alt: 'a sweater', word: 'sweater' },
-        { id: 'B4', pic: 'MOUNTAINS', alt: 'mountains', word: 'mountains' },
+        { id: 'B4', pic: 'BAGPIPES', alt: 'bagpipes', word: 'bagpipes' },
         { id: 'B5', pic: 'JELLYFISH', alt: 'a jellyfish', word: 'jellyfish' },
         { id: 'B6', pic: '1F3F0', alt: 'a sandcastle with a bucket and spade', word: 'sandcastle' }
       ]
