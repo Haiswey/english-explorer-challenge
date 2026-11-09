@@ -371,7 +371,7 @@ export const CHALLENGE3 = {
           { pic: '1F9E6', alt: 'two socks', text: 'There ___ socks.', ans: 'are', opts: ['are', 'is', 'have'] }] },
         { id: 'C2', vs: [ // present simple: plural animals + live
           { pic: 'OCEAN', alt: 'the ocean', text: 'Sharks ___ in the ocean.', ans: 'live', opts: ['lives', 'live', 'living'] },
-          { pic: 'POLARBEAR', alt: 'a polar bear on the ice', text: 'Polar bears ___ on the ice.', ans: 'live', opts: ['lives', 'live', 'living'] }] },
+          { pic: 'POLARBEAR', alt: 'a polar bear', text: 'Polar bears ___ in the polar region.', ans: 'live', opts: ['lives', 'live', 'living'] }] },
         { id: 'C3', vs: [ // isn't wearing - look at the colour in the picture
           { pic: '1F9E5', alt: 'a green jacket', text: 'He ___ wearing a red jacket.', ans: "isn't", opts: ["isn't", "aren't", "don't"] },
           { pic: '1F456', alt: 'blue jeans', text: 'She ___ wearing green jeans.', ans: "isn't", opts: ["isn't", "aren't", "doesn't"] }] },
