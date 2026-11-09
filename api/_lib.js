@@ -190,28 +190,76 @@ export async function hasFullMarks(klass, name, practiceKey) {
 // ONE small file at a fixed address (a plain fetch to read, one put to change). Missing = the defaults in SETS.
 const OPEN_PATH = 'config/open.json';
 export async function getOpenState() {
-  const saved = (await readJson(OPEN_PATH)) || {};
+  return openStateFrom((await readJson(OPEN_PATH)) || {}, Date.now());
+}
+// The saved file holds, per practice set / real quiz: { open, at } from the Open/Close buttons, and optionally a schedule
+// { from, until } (ms). A schedule decides by the clock: open from `from` until `until`, with nothing to switch (no timer,
+// no extra Blob operation). A test that is open by its schedule closes any other open test for that time (one test at a time);
+// pupils already in that other test may still hand in (mayHandIn uses `at`).
+export function openStateFrom(saved, now) {
   const out = {};
   for (const s of SETS) {
+    if (s.linkedTo) continue;
     const v = saved[s.key];
-    out[s.key] = v && typeof v.open === 'boolean' ? { open: v.open, at: v.at || 0 } : { open: s.openByDefault, at: 0 };
+    const st = v && typeof v.open === 'boolean' ? { open: v.open, at: v.at || 0 } : { open: s.openByDefault, at: 0 };
+    if (v && v.from && v.until) {
+      st.from = v.from; st.until = v.until;
+      if (now >= v.from && now < v.until) { st.open = true; st.at = v.from; }
+      else { st.open = false; if (now >= v.until) st.at = v.until; }
+    }
+    out[s.key] = st;
+  }
+  // A test opened with the button stays closed once another test's scheduled opening time has come (after that button press).
+  for (const s of SETS) {
+    const st = out[s.key];
+    if (s.linkedTo || !st.open || st.from) continue;
+    const took = SETS.find(o => !o.linkedTo && o.key !== s.key && out[o.key].from && out[o.key].from <= now && out[o.key].from > st.at);
+    if (took) out[s.key] = { ...st, open: false, at: out[took.key].from };
   }
   // A challenge is linked to its practice set: it is open exactly when the practice set is open.
   for (const s of SETS) if (s.linkedTo) out[s.key] = { ...out[s.linkedTo] };
   return out;
 }
-export async function setOpen(key, open) {
+const rootKey = key => {
   const set = SETS.find(s => s.key === key);
   if (!set) throw new Error('Unknown test.');
-  if (set.linkedTo) key = set.linkedTo; // opening or closing a challenge changes its practice set (and so both)
-  const state = await getOpenState(), now = Date.now();
-  // Only ONE test is open at a time (a practice set or the real quiz, with its challenge): opening one closes the others.
-  // A pupil who started a test that is closed this way can still hand it in (see mayHandIn).
-  if (open) for (const s of SETS) if (!s.linkedTo && s.key !== key && state[s.key].open) state[s.key] = { open: false, at: now };
-  state[key] = { open: !!open, at: now };
-  for (const s of SETS) if (s.linkedTo) state[s.key] = { ...state[s.linkedTo] };
-  await put(OPEN_PATH, JSON.stringify(state), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
-  return state;
+  return set.linkedTo || key; // a challenge follows its practice set (and the real quiz)
+};
+async function saveOpen(saved) {
+  await put(OPEN_PATH, JSON.stringify(saved), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
+  return openStateFrom(saved, Date.now());
+}
+// The Open / Close buttons. Pressing one removes that test's schedule (the teacher decides now).
+export async function setOpen(key, open) {
+  key = rootKey(key);
+  const saved = (await readJson(OPEN_PATH)) || {}, now = Date.now(), state = openStateFrom(saved, now);
+  // Only ONE test is open at a time (a practice set or the real quiz, with its challenge): opening one closes the others
+  // (an other test open by its schedule loses that schedule). A pupil already in a closed test can still hand it in (mayHandIn).
+  if (open) for (const s of SETS) {
+    if (s.linkedTo || s.key === key) continue;
+    if (state[s.key].open) saved[s.key] = { open: false, at: now };
+    else if (saved[s.key] && saved[s.key].open && !saved[s.key].from) saved[s.key] = { open: false, at: state[s.key].at }; // closed by a schedule earlier: keep it closed
+  }
+  saved[key] = { open: !!open, at: now };
+  return saveOpen(saved);
+}
+// Opening and closing times (ms) for one test; from = null removes them. Times of two tests must not overlap.
+export async function setSchedule(key, from, until) {
+  key = rootKey(key);
+  const saved = (await readJson(OPEN_PATH)) || {}, now = Date.now(), state = openStateFrom(saved, now);
+  const cur = state[key];
+  if (from == null) { saved[key] = { open: false, at: cur.open ? now : cur.at }; return saveOpen(saved); }
+  from = Number(from); until = Number(until);
+  if (!(from > 0 && until > 0)) throw new Error('Please choose both an opening and a closing time.');
+  if (until <= from) throw new Error('The closing time must be after the opening time.');
+  if (until <= now) throw new Error('The closing time has already passed.');
+  for (const s of SETS) {
+    const o = state[s.key];
+    if (s.linkedTo || s.key === key || !o.from || o.until <= now) continue;
+    if (from < o.until && o.from < until) throw new Error('These times overlap with ' + s.label + ' (only one test can be open at a time).');
+  }
+  saved[key] = { open: false, at: cur.open && !cur.from ? now : (cur.at || 0), from, until };
+  return saveOpen(saved);
 }
 // Closing stops NEW starts. A pupil who started before it closed may still hand in (for up to 2 hours).
 export function mayHandIn(state, key, startedAt) {

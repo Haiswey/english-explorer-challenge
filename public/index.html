@@ -17,6 +17,8 @@ const app = document.getElementById('app');
 let QZ = null, HOME = null, S = null;
 const ALL = () => QZ.parts.flatMap(p => p.qs.map(q => ({ ...q, part: p })));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// A time in Malaysia, the way a pupil reads it: "Monday 10 November, 9:00 am"
+const whenMY = ms => new Date(ms).toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true }).replace(' at ', ', ');
 const nameKey = n => String(n).replace(/\s+/g, ' ').trim().toLowerCase();
 const key = () => 'kkx-' + QZ.id + '-' + S.klass + '-' + nameKey(S.name);
 const save = () => { try { localStorage.setItem(key(), JSON.stringify(S)); } catch (e) {} };
@@ -70,8 +72,13 @@ async function homeScreen(choose) {
   const sets = HOME.sets || [];
   if (!sets.length) {
     app.innerHTML = '<div class="title">' + compass + '<h1>English Explorer Challenge</h1></div>' +
-      '<section class="panel" style="margin-top:18px;text-align:center"><h2 class="head" style="font-size:26px">No test is open now</h2><p>Please wait for your teacher.</p><div class="actions" style="justify-content:center"><button class="btn" id="again">Check again</button></div></section>';
-    document.getElementById('again').onclick = () => homeScreen(); return;
+      '<section class="panel" style="margin-top:18px;text-align:center"><h2 class="head" style="font-size:26px">No test is open now</h2>' +
+      (HOME.next ? '<p class="opens">' + esc(HOME.next.label) + ' opens on<br><b>' + esc(whenMY(HOME.next.from)) + '</b></p>' : '<p>Please wait for your teacher.</p>') +
+      '<div class="actions" style="justify-content:center"><button class="btn" id="again">Check again</button></div></section>';
+    document.getElementById('again').onclick = () => homeScreen();
+    // Check again by itself just after the opening time (if it is today), using the server clock in case the device clock is wrong.
+    if (HOME.next && HOME.now) { const wait = HOME.next.from - HOME.now + 3000; if (wait > 0 && wait < 12 * 3600 * 1000) { clearTimeout(window.openTimer); window.openTimer = setTimeout(() => { if (document.getElementById('again')) homeScreen(); }, wait); } }
+    return;
   }
   if (sets.length === 1 && !choose) return chooseSet(sets[0].key);
   app.innerHTML = '<div class="title">' + compass + '<h1>English Explorer Challenge</h1><p>Choose your test</p></div>' +

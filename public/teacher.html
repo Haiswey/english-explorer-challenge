@@ -38,6 +38,13 @@ tbody tr:hover { background: var(--sky); }
 .chip.off { background: var(--coral-soft); color: var(--coral); }
 .orow .btn { min-height: 40px; font-size: 16px; padding: 4px 18px; }
 .orow .btn.busy:disabled { opacity: 1; cursor: progress; } /* the pressed button stays clear while it saves */
+.orow .sched { display: block; font-weight: 400; font-size: 15px; color: var(--sea); margin-top: 2px; }
+.timeform { flex: 1 1 100%; display: grid; gap: 10px; padding: 10px 0 4px; }
+.timeform[hidden] { display: none; }
+.timeform label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 700; }
+.timeform input { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; color-scheme: light dark; }
+.timeform .small { font-size: 14px; margin: 0; }
+.timeform .err { margin: 0; min-height: 0; }
 .tags { margin-top: 3px; }
 .tag { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--coral-soft); color: var(--coral); margin-right: 6px; display: inline-block; }
 /* Narrow screens (phones, small tablets): each pupil is a small card, no sideways scrolling */
@@ -131,28 +138,68 @@ function lockPage() {
   $('res').hidden = true; $('lock').hidden = true; $('login').hidden = false; $('pin').focus();
 }
 // Which tests can pupils start? One row per test with an Open / Close button.
+// Times are Malaysia time (UTC+8) on every device.
+const MY = 8 * 3600 * 1000;
+const fmtTime = ms => new Date(ms).toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true });
+const toLocalInput = ms => ms ? new Date(ms + MY).toISOString().slice(0, 16) : '';
+const fromLocalInput = v => v ? Date.parse(v + ':00+08:00') : 0;
+function schedText(st) {
+  if (!st || !st.from) return '';
+  const now = Date.now();
+  if (now < st.from) return 'Opens ' + fmtTime(st.from) + ', closes ' + fmtTime(st.until);
+  if (now < st.until) return 'Closes by itself ' + fmtTime(st.until);
+  return 'Closed by itself ' + fmtTime(st.until);
+}
+async function saveOpenChange(body) {
+  const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ pin: PIN }, body)) });
+  const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not changed.');
+  DATA.open = j.open;
+}
 function renderOpen() {
   $('opens').innerHTML = DATA.sets.filter(s => !s.linkedTo).map(s => {
-    const o = DATA.open[s.key] && DATA.open[s.key].open;
+    const st = DATA.open[s.key] || {}, o = st.open;
     const chal = DATA.sets.find(x => x.linkedTo === s.key);
-    return '<div class="orow"><span class="oname">' + esc(s.label) + (chal ? ' <span class="muted">and its challenge</span>' : '') + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') + '</span>' +
+    return '<div class="orow"><span class="oname">' + esc(s.label) + (chal ? ' <span class="muted">and its challenge</span>' : '') + (s.hasQuiz ? '' : ' <span class="muted">(questions not added yet, pupils will not see it)</span>') +
+      (st.from ? '<span class="sched">' + esc(schedText(st)) + '</span>' : '') + '</span>' +
       '<span class="chip ' + (o ? 'on' : 'off') + '">' + (o ? 'Open' : 'Closed') + '</span>' +
-      (isAdmin() ? '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button>' : '') + '</div>';
+      (isAdmin() ? '<button class="btn ' + (o ? 'ghost' : '') + '" data-open="' + esc(s.key) + '" data-to="' + (o ? '0' : '1') + '">' + (o ? 'Close' : 'Open') + '</button>' +
+        '<button class="btn ghost" data-times="' + esc(s.key) + '">Set times</button>' +
+        '<div class="timeform" id="tf-' + esc(s.key) + '" hidden>' +
+          '<label>Opens <input type="datetime-local" data-from value="' + toLocalInput(st.from) + '"></label>' +
+          '<label>Closes <input type="datetime-local" data-until value="' + toLocalInput(st.until) + '"></label>' +
+          '<p class="muted small">Malaysia time. The test opens and closes by itself. Pressing Open or Close removes these times.</p>' +
+          '<p class="err" data-terr></p>' +
+          '<div class="actions"><button class="btn" data-save="' + esc(s.key) + '">Save times</button>' + (st.from ? '<button class="btn ghost" data-clear="' + esc(s.key) + '">Remove times</button>' : '') + '</div></div>' : '') + '</div>';
   }).join('');
-  const going = DATA.sets.filter(s => !s.linkedTo && s.hasQuiz && DATA.open[s.key] && DATA.open[s.key].open).map(s => esc(s.label) + (DATA.sets.some(x => x.linkedTo === s.key) ? ' and its challenge' : ''));
-  $('nowopen').innerHTML = going.length ? '<b>Open for pupils now:</b> ' + going.join('; ') + '.' : '<b>No test is open for pupils right now.</b>';
+  const going = DATA.sets.filter(s => !s.linkedTo && s.hasQuiz && DATA.open[s.key] && DATA.open[s.key].open).map(s => esc(s.label) + (DATA.sets.some(x => x.linkedTo === s.key) ? ' and its challenge' : '') + (DATA.open[s.key].from ? ' (closes by itself ' + esc(fmtTime(DATA.open[s.key].until)) + ')' : ''));
+  const coming = DATA.sets.filter(s => !s.linkedTo && s.hasQuiz && DATA.open[s.key] && DATA.open[s.key].from > Date.now()).sort((a, b) => DATA.open[a.key].from - DATA.open[b.key].from)
+    .map(s => esc(s.label) + ' opens ' + esc(fmtTime(DATA.open[s.key].from)) + ' and closes ' + esc(fmtTime(DATA.open[s.key].until)));
+  $('nowopen').innerHTML = (going.length ? '<b>Open for pupils now:</b> ' + going.join('; ') + '.' : '<b>No test is open for pupils right now.</b>') +
+    (coming.length ? '<br><b>Coming up:</b> ' + coming.join('; ') + '.' : '');
   $('adminopen').hidden = !isAdmin();
+  const lock = () => $('opens').querySelectorAll('button').forEach(x => x.disabled = true); // one change at a time
   $('opens').querySelectorAll('[data-open]').forEach(b => b.onclick = async () => {
     const opening = b.dataset.to === '1', set = DATA.sets.find(s => s.key === b.dataset.open);
     const others = DATA.sets.filter(s => !s.linkedTo && s.key !== b.dataset.open && DATA.open[s.key] && DATA.open[s.key].open).map(s => s.label);
     if (opening && others.length && !confirm('Open ' + set.label + '?\n\nOnly one test can be open at a time, so this closes: ' + others.join(', ') + '.')) return;
-    $('opens').querySelectorAll('[data-open]').forEach(x => x.disabled = true); // one change at a time
-    b.textContent = opening ? 'Opening…' : 'Closing…'; b.classList.add('busy');
-    try {
-      const x = await fetch('/api/results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: PIN, action: 'setOpen', set: b.dataset.open, open: b.dataset.to === '1' }) });
-      const j = await x.json(); if (!x.ok) throw new Error(j.error || 'Not changed.');
-      DATA.open = j.open;
-    } catch (e) { alert(e.message); }
+    if (DATA.open[set.key].from && !confirm((opening ? 'Open ' : 'Close ') + set.label + ' now?\n\nThis removes its opening and closing times.')) return;
+    lock(); b.textContent = opening ? 'Opening…' : 'Closing…'; b.classList.add('busy');
+    try { await saveOpenChange({ action: 'setOpen', set: b.dataset.open, open: opening }); } catch (e) { alert(e.message); }
+    renderOpen();
+  });
+  $('opens').querySelectorAll('[data-times]').forEach(b => b.onclick = () => { const f = $('tf-' + b.dataset.times); f.hidden = !f.hidden; });
+  $('opens').querySelectorAll('[data-save]').forEach(b => b.onclick = async () => {
+    const f = $('tf-' + b.dataset.save), err = f.querySelector('[data-terr]');
+    const from = fromLocalInput(f.querySelector('[data-from]').value), until = fromLocalInput(f.querySelector('[data-until]').value);
+    if (!from || !until) { err.textContent = 'Please choose both an opening and a closing time.'; return; }
+    if (until <= from) { err.textContent = 'The closing time must be after the opening time.'; return; }
+    lock(); b.textContent = 'Saving…'; b.classList.add('busy');
+    try { await saveOpenChange({ action: 'setSchedule', set: b.dataset.save, from, until }); renderOpen(); }
+    catch (e) { renderOpen(); const f2 = $('tf-' + b.dataset.save); f2.hidden = false; f2.querySelector('[data-from]').value = toLocalInput(from); f2.querySelector('[data-until]').value = toLocalInput(until); f2.querySelector('[data-terr]').textContent = e.message; }
+  });
+  $('opens').querySelectorAll('[data-clear]').forEach(b => b.onclick = async () => {
+    lock(); b.textContent = 'Removing…'; b.classList.add('busy');
+    try { await saveOpenChange({ action: 'setSchedule', set: b.dataset.clear, from: null }); } catch (e) { alert(e.message); }
     renderOpen();
   });
 }
