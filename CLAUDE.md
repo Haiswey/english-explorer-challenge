@@ -116,7 +116,7 @@ To publish from this folder: `npx vercel link` (choose the existing project kk2e
 - Content from the Super Minds 1 Teacher's Book (Units 5-9 word lists + Unit 6 English for school: habitats and their animals). Different words from the practice sets.
 - A Vocabulary 8 x 1: topic words from the book plus a few extra words inside the same topics (*): goat, stairs, sweater, shoulder*, paint a picture,
   polar region, play the piano, sunglasses*.
-- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule), her chosen words: tongue, gloves, garage (changed from kitchen on 9 Nov 2026; picture GARAGE), dolphin, cheetah, blouse.
+- B Spelling 6 x 2: ALL typed as whole words (no missing letters, Miss Irene's rule), her chosen words: tongue, gloves, garage (changed from kitchen on 9 Nov 2026; picture GARAGE: empty garage, no car, a small bicycle at the side), dolphin, cheetah, blouse.
   No spelling word appears anywhere else in the quiz (option, sentence or tile), so nothing gives a spelling away.
 - C Grammar 10 x 2, from the Unit 5-9 grammar lessons and the mistakes Year 2 pupils often make: there is/are; short answers (Yes, there is / No, there aren't;
   Yes, he is / No, she isn't; No, it can't / Yes, he can; Yes, I do); It's (one) / They're (more than one); this/these; am/is + wearing; can + plain verb;
